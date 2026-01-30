@@ -90,7 +90,27 @@
         .progress-track { background: #eee; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
         .progress-thumb { height: 100%; width: 0%; transition: 1s ease-in-out; }
         
-        .app-footer { margin-top: 20px; text-align: center; font-size: 0.7rem; color: #999; line-height: 1.4; }
+        /* قسم الحقوق الجديد */
+        .creator-credits {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+        }
+        .creator-credits p {
+            margin: 4px 0;
+            font-size: 0.85rem;
+            color: #444;
+            font-weight: 600;
+        }
+        .dept-tag {
+            font-size: 0.7rem !important;
+            color: #888 !important;
+            letter-spacing: 0.5px;
+        }
+        .heart-icon { color: #e74c3c; font-size: 0.9rem; }
+
+        .app-footer { margin-top: 15px; text-align: center; font-size: 0.7rem; color: #bbb; }
     </style>
 </head>
 <body>
@@ -164,8 +184,14 @@
             </div>
         </div>
 
+        <div class="creator-credits">
+            <p>إعداد وتصميم</p>
+            <p>أ. نورة القثامي <span class="heart-icon">✦</span></p>
+            <p class="dept-tag">قسم الحاسب وتقنية المعلومات</p>
+        </div>
+
         <footer class="app-footer">
-            <p>💡 ملاحظة: غياب الساعتين (العملي) يُرصد كساعتين في نظام رايات.</p>
+            <p>💡 ملاحظة: غياب العملي يُرصد كساعتين في نظام رايات.</p>
         </footer>
     </div>
 </div>
