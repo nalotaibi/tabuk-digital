@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رادار الحرمان الذكي - تقنية تبوك</title>
+    <title>رادار الحرمان الذكي - رقمية تبوك</title>
     <style>
         :root {
             --primary: #1d5c41;
@@ -75,7 +75,6 @@
                 <img src="https://tvtc.gov.sa/SiteAssets/images/logo.png" alt="شعار المؤسسة">
             </div>
             <div class="header-text">
-                <p class="college-name">الكلية التقنية الرقمية للبنات بتبوك</p>
                 <h1>رادار الحرمان الذكي</h1>
                 <div class="badge-container">
                     <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
@@ -85,7 +84,7 @@
 
         <div class="input-container">
             <div class="form-group">
-                <label>📚 ساعات المقرر في الخطة</label>
+                <label> عدد ساعات المقرر الأسبوعية</label>
                 <select id="courseHours" onchange="calculate()">
                     <option value="1">1 ساعة</option>
                     <option value="2">2 ساعة</option>
@@ -98,14 +97,12 @@
 
             <div class="absent-grid">
                 <div class="input-box">
-                    <label>غياب (ساعة واحدة)</label>
-                    <span class="help-text">اكتبي عدد مرات الغياب</span>
-                    <input type="text" id="count1" placeholder="مثلاً: ٣" oninput="fixArabicNumbers(this)">
+                    <label>غياب (محاضرة ساعة)</label>
+                    <input type="text" id="count1" placeholder=" اكتب عدد مرات الغياب" oninput="fixArabicNumbers(this)">
                 </div>
                 <div class="input-box">
-                    <label>غياب (ساعتين)</label>
-                    <span class="help-text">اكتبي عدد مرات الغياب</span>
-                    <input type="text" id="count2" placeholder="مثلاً: ٢" oninput="fixArabicNumbers(this)">
+                    <label>غياب (محاضرة ساعتين)</label>
+                    <input type="text" id="count2" placeholder="اكتب عدد مرات الغياب " oninput="fixArabicNumbers(this)">
                 </div>
             </div>
         </div>
@@ -177,7 +174,7 @@ function calculate() {
     thumb.style.width = Math.min(currentPercent, 100) + "%";
 
     if (actualAbsentHours >= limitHours) {
-        leftRes.innerText = "حرمان !";
+        leftRes.innerText = "حرمان";
         leftRes.style.color = "var(--danger)";
         statusBox.className = "result-display danger-mode";
         thumb.style.background = "var(--danger)";
