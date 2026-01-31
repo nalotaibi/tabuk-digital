@@ -132,7 +132,7 @@
         renderCourses();
     }
 
-    function renderCourses() {
+        function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
         
@@ -142,7 +142,7 @@
             const limit = totalSemHours * 0.20;
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
             const percent = totalSemHours > 0 ? (currentAbsent / totalSemHours) * 100 : 0;
-            const remaining = limit - currentAbsent;
+            const remaining = Math.floor(limit - currentAbsent);
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
             if (percent >= 20) { 
@@ -153,9 +153,25 @@
                 statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; 
             }
 
-            let advice = percent < 20 
-                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (يُعادل <b>${Math.floor(remaining/2)}</b> محاضرة مدتها ساعتين) قبل الحرمان</div>` 
-                : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
+            // --- منطق التفكيك الذكي للساعات المتبقية ---
+            let advice = "";
+            if (percent < 20) {
+                const lecturesOf2 = Math.floor(remaining / 2); // كم محاضرة ساعتين
+                const lecturesOf1 = remaining % 2; // الباقي (ساعة واحدة)
+                
+                let details = "";
+                if (lecturesOf2 > 0 && lecturesOf1 > 0) {
+                    details = `يُعادل <b>${lecturesOf2}</b> محاضرة (ساعتين) و <b>${lecturesOf1}</b> محاضرة (ساعة واحدة)`;
+                } else if (lecturesOf2 > 0) {
+                    details = `يُعادل <b>${lecturesOf2}</b> محاضرة (ساعتين)`;
+                } else if (lecturesOf1 > 0) {
+                    details = `يُعادل <b>${lecturesOf1}</b> محاضرة (ساعة واحدة)`;
+                }
+
+                advice = `<div class="advice-box">متبقي لك <b>${remaining}</b> ساعة (${details}) قبل الحرمان</div>`;
+            } else {
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
+            }
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -208,6 +224,7 @@
         });
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
+
 
     function handleInput(id, field, el) {
         el.value = fixNumbers(el.value);
