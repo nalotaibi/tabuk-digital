@@ -136,7 +136,6 @@
             const totalSemHours = weeklyH * 16;
             const limit = totalSemHours * 0.20;
             
-            // تصفير غياب الساعة الواحدة إذا كانت الساعات الأسبوعية زوجية لضمان دقة الحساب
             if (weeklyH % 2 === 0) { course.absent1 = '0'; }
 
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
@@ -156,8 +155,15 @@
             if (percent < 20) {
                 const lecturesOf2 = Math.floor(remaining / 2);
                 const lecturesOf1 = remaining % 2;
-                let details = (lecturesOf2 > 0 && lecturesOf1 > 0) ? `<b>${lecturesOf2}</b> (ساعتين) و <b>${lecturesOf1}</b> (ساعة)` : 
-                              (lecturesOf2 > 0) ? `<b>${lecturesOf2}</b> (ساعتين)` : `<b>${lecturesOf1}</b> (ساعة)`;
+                let details = "";
+                
+                if (lecturesOf2 > 0 && lecturesOf1 === 0) {
+                    details = `<b>${lecturesOf2}</b> محاضرات`;
+                } else if (lecturesOf2 > 0 && lecturesOf1 > 0) {
+                    details = `<b>${lecturesOf2}</b> (ساعتين) و <b>${lecturesOf1}</b> (ساعة)`;
+                } else if (lecturesOf1 > 0) {
+                    details = `<b>${lecturesOf1}</b> ساعة واحدة`;
+                }
                 advice = `<div class="advice-box">متبقي لك <b>${remaining}</b> ساعة (يُعادل ${details}) قبل الحرمان</div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
@@ -165,8 +171,6 @@
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            
-            // منطق الإظهار/الإخفاء بناءً على الساعات (فردي أو زوجي)
             const isOdd = (weeklyH % 2 !== 0);
 
             card.innerHTML = `
