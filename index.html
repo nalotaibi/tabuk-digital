@@ -161,13 +161,19 @@
                 const lecturesOf1 = remHours % 2;
                 
                 let details = "";
-                if (lecturesOf2 > 0 && lecturesOf1 === 0) {
-                    details = `<b>${lecturesOf2}</b> محاضرات`;
-                } else if (lecturesOf2 > 0 && lecturesOf1 > 0) {
-                    details = `<b>${lecturesOf2}</b> محاضرة (ساعتين) و <b>${lecturesOf1}</b> محاضرة (ساعة)`;
-                } else if (lecturesOf1 > 0) {
-                    details = `<b>${lecturesOf1}</b> ساعة واحدة`;
-                } else {
+if (lecturesOf2 > 0 && lecturesOf1 > 0) {
+    // حالة الخليط (مثل 7 ساعات)
+    let word2 = (lecturesOf2 >= 3) ? "محاضرات" : (lecturesOf2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+    details = `يُعادل <b>${lecturesOf2}</b> ${word2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
+} 
+else if (lecturesOf2 > 0 && lecturesOf1 === 0) {
+    // حالة الساعات الزوجية فقط (مثل 6 ساعات)
+    let word = (lecturesOf2 >= 3 && lecturesOf2 <= 10) ? "محاضرات" : "محاضرة";
+    details = `يُعادل <b>${lecturesOf2}</b> ${word}`;
+}
+else if (lecturesOf1 > 0) {
+    details = `يُعادل <b>1</b> محاضرة واحدة (ساعة)`;
+} else {
                     details = `أقل من ساعة واحدة`;
                 }
                 advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة: يُعادل ${details}</div>`;
