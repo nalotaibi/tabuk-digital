@@ -50,7 +50,6 @@
         }
 
         .input-group { margin-bottom: 15px; }
-        /* تحسين شكل التسميات لتكون أوضح */
         .input-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 8px; font-weight: 700; background: #f8faf9; padding: 5px 10px; border-right: 3px solid var(--primary); }
         
         select, input { 
@@ -149,20 +148,23 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label>  عدد ساعات المقرر الأسبوعية</label>
+                    <label>عدد ساعات المقرر الأسبوعية</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
                 </div>
 
+                <div style="margin-top: 10px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">كم محاضرة غبتِ حسب جدولك؟</div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 15px;">
+
                 <div class="input-group">
-                    <label> اكتب عدد المحاضرات التي غبت فيها (مدتها ساعة بالجدول)</label>
-                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder=" عدد المرات" oninput="handleInput(${course.id}, 'absent1', this)">
+                    <label>🔹 محاضرات مدتها ساعة واحدة:</label>
+                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="مثال: 2" oninput="handleInput(${course.id}, 'absent1', this)">
                 </div>
 
                 <div class="input-group">
-                    <label>اكتب عدد المحاضرات التي غبت فيها (مدتها ساعتين بالجدول)</label>
-                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder=" عدد المرات" oninput="handleInput(${course.id}, 'absent2', this)">
+                    <label>🔹 محاضرات مدتها ساعتان:</label>
+                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="مثال: 3" oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
                 <div class="result-area ${statusClass}">
@@ -181,7 +183,7 @@
 
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:bold;">
                         <span>إجمالي غيابك: ${currentAbsent} ساعة</span>
-                        <span>مسموح لكِ: ${limit.toFixed(0)} ساعة</span>
+                        <span>مسموح لك: ${limit.toFixed(0)} ساعة</span>
                     </div>
                     ${advice}
                 </div>
@@ -209,7 +211,7 @@
     }
 
     function clearEverything() {
-        if(confirm('تصفير الكل؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); }
+        if(confirm('مسح الكل؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); }
     }
 
     window.onload = renderCourses;
