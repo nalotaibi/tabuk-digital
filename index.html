@@ -77,7 +77,6 @@
         .progress-thumb { height: 100%; width: 0%; transition: 1s ease-in-out; }
         
         .app-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #d1d9e6; text-align: center; }
-        .signature { font-size: 0.75rem; color: var(--primary); font-weight: 700; }
         .form-group { text-align: center; margin-bottom: 15px; }
     </style>
 </head>
@@ -91,67 +90,49 @@
             </div>
             <div class="header-text">
                 <h1>منبه الغياب الذكي</h1>
-                <div class="badge-container">
-                    <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
-                </div>
+                <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
             </div>
         </header>
 
-        <div class="input-container">
-            <div class="form-group">
-                <label>عدد ساعات المقرر الأسبوعية</label>
-                <select id="courseHours" onchange="calculate()">
-                    <option value="1">1 ساعة</option>
-                    <option value="2">2 ساعة</option>
-                    <option value="3">3 ساعات</option>
-                    <option value="4" selected>4 ساعات</option>
-                    <option value="5">5 ساعات</option>
-                    <option value="6">6 ساعات</option>
-                </select>
-            </div>
-
-            <div class="absent-grid">
-                <div class="input-box">
-                    <label>غياب (مدة المحاضرة ساعة)</label>
-                    <input type="text" id="count1" oninput="fixArabicNumbers(this)">
-                </div>
-                <div class="input-box">
-                    <label>غياب (مدة المحاضرة ساعتين)</label>
-                    <input type="text" id="count2" oninput="fixArabicNumbers(this)">
-                </div>
-            </div>
-            <button class="reset-btn" onclick="resetApp()">↺ مسح البيانات</button>
+        <div class="form-group">
+            <label>عدد ساعات المقرر الأسبوعية</label>
+            <select id="courseHours" onchange="calculate()">
+                <option value="1">1 ساعة</option>
+                <option value="2">2 ساعة</option>
+                <option value="3">3 ساعات</option>
+                <option value="4" selected>4 ساعات</option>
+                <option value="5">5 ساعات</option>
+                <option value="6">6 ساعات</option>
+            </select>
         </div>
 
+        <div class="absent-grid">
+            <div class="input-box">
+                <label>غياب (مدة المحاضرة ساعة)</label>
+                <input type="text" id="count1" oninput="fixArabicNumbers(this)">
+            </div>
+            <div class="input-box">
+                <label>غياب (مدة المحاضرة ساعتين)</label>
+                <input type="text" id="count2" oninput="fixArabicNumbers(this)">
+            </div>
+        </div>
+
+        <button class="reset-btn" onclick="resetApp()">↺ مسح البيانات</button>
+
         <div id="statusBox" class="result-display safe-mode">
-            <div class="main-metric">
-                <span class="metric-label">الرصيد المتبقي قبل الحرمان</span>
-                <h2 id="leftRes">--</h2>
+            <span>الرصيد المتبقي قبل الحرمان</span>
+            <h2 id="leftRes">--</h2>
+
+            <div style="margin: 15px 0;">
+                <div>نسبة الغياب: <span id="percentRes" class="m-value">0%</span></div>
+                <div>ساعات الغياب: <span id="hoursRes" class="m-value">0</span></div>
             </div>
 
-            <div class="metrics-row" style="display: flex; justify-content: space-around; align-items: center; margin: 15px 0;">
-                <div class="metric-item">
-                    <span style="font-size: 0.75rem; color: #718096; display: block;">نسبة الغياب</span>
-                    <span id="percentRes" class="m-value">0%</span>
-                </div>
-                <div style="width: 1px; height: 30px; background: #d1d9e6;"></div>
-                <div class="metric-item">
-                    <span style="font-size: 0.75rem; color: #718096; display: block;">ساعات الغياب</span>
-                    <span id="hoursRes" class="m-value">0</span>
-                </div>
+            <div class="progress-track">
+                <div id="progressBar" class="progress-thumb"></div>
             </div>
 
-            <div class="progress-section">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #718096; margin-bottom: 5px;">
-                    <span>مؤشر القرب من الحرمان</span>
-                    <span id="limitHours">--</span>
-                </div>
-                <div class="progress-track">
-                    <div id="progressBar" class="progress-thumb"></div>
-                </div>
-            </div>
-
-            <div id="extraInfo" style="margin-top:12px;font-size:0.85rem"></div>
+            <div id="extraInfo" style="margin-top:12px;font-size:0.9rem;font-weight:bold"></div>
         </div>
 
         <footer class="app-footer">
@@ -187,30 +168,38 @@ function calculate() {
 
     percentRes.innerText = percent.toFixed(1) + "%";
     hoursRes.innerText = absentHours;
-    limitHours.innerText = `الحد الأقصى: ${limitHours.toFixed(1)} ساعة`;
     progressBar.style.width = Math.min((absentHours/limitHours)*100,100) + "%";
 
-    let color,msg,mode;
+    let color, mode, msg;
 
     if(percent >= 20){
-        color="var(--danger)"; mode="danger-mode";
+        color="var(--danger)";
+        mode="danger-mode";
         leftRes.innerText="🚫 حرمان";
         msg="تجاوزتِ الحد المسموح.";
     }
-    else{
+    else if(percent >= 15){
+        color="var(--orange)";
+        mode="warning-mode";
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
-
-        if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
-        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن"; }
+        msg="🟠 اقتربتِ جداً من حد الحرمان";
+    }
+    else if(percent >= 10){
+        color="var(--warning)";
+        mode="warning-mode";
+        leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
+        msg="🟡 تنبيه";
+    }
+    else{
+        color="var(--safe)";
+        mode="safe-mode";
+        leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
+        msg="🟢 وضعك مطمئن";
     }
 
     progressBar.style.background=color;
     statusBox.className="result-display "+mode;
-
-    extraInfo.innerHTML=`${msg}<br>
-    يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة)<br>
-    أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
+    extraInfo.innerHTML=msg;
 }
 
 window.onload = calculate;
