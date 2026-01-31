@@ -113,7 +113,7 @@
     }
 
     function addNewCourse() {
-        courses.push({ id: Date.now(), name: ' اكتب اسم المقرر ...', weeklyHours: 4, absent1: '', absent2: '' });
+        courses.push({ id: Date.now(), name: ' اكتب اسم المقرر ', weeklyHours: 4, absent1: '', absent2: '' });
         renderCourses();
     }
 
@@ -149,7 +149,7 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label> اختر عدد ساعات المقرر الأسبوعية</label>
+                    <label>  عدد ساعات المقرر الأسبوعية</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
