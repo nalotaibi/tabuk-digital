@@ -49,15 +49,18 @@
             margin-bottom: 18px; padding: 5px; outline: none; background: transparent;
         }
 
-        /* تعديل المسافات بين المجموعات */
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 0.8rem; color: #555; margin-bottom: 6px; font-weight: 600; }
+        /* تحسين شكل التسميات لتكون أوضح */
+        .input-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 8px; font-weight: 700; background: #f8faf9; padding: 5px 10px; border-right: 3px solid var(--primary); }
         
         select, input { 
             width: 100%; padding: 12px; border-radius: 14px; 
             border: 1.5px solid #edf2f1; font-family: inherit; text-align: center;
             font-size: 0.95rem; outline: none; box-sizing: border-box;
+            transition: border-color 0.3s;
         }
+        
+        input:focus { border-color: var(--primary); background: #f0f7f4; }
 
         .result-area { border-radius: 20px; padding: 18px; margin-top: 18px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
@@ -136,7 +139,7 @@
             }
 
             let advice = percent < 20 
-                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة مدتها ساعتين) قبل الحرمان</div>` 
+                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرات كاملة) قبل الحرمان</div>` 
                 : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
 
             const card = document.createElement('div');
@@ -146,20 +149,20 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label>الساعات الأسبوعية</label>
+                    <label>⏱️ كم ساعة تدرسين أسبوعياً؟</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label>غياب (محاضرة مدتها ساعة)</label>
-                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
+                    <label>📝 كم محاضرة (ساعة واحدة) غبتِ فيها؟</label>
+                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="أدخلي عدد المحاضرات" oninput="handleInput(${course.id}, 'absent1', this)">
                 </div>
 
                 <div class="input-group">
-                    <label>غياب (محاضرة مدتها ساعتين)</label>
-                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
+                    <label>📚 كم محاضرة (ساعتين) غبتِ فيها؟</label>
+                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="أدخلي عدد المحاضرات" oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
                 <div class="result-area ${statusClass}">
@@ -177,8 +180,8 @@
                     </div>
 
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:bold;">
-                        <span>إجمالي الغياب: ${currentAbsent} س</span>
-                        <span>حد الحرمان: ${limit.toFixed(0)} س</span>
+                        <span>إجمالي غيابك: ${currentAbsent} ساعة</span>
+                        <span>مسموح لكِ: ${limit.toFixed(0)} ساعة</span>
                     </div>
                     ${advice}
                 </div>
