@@ -56,7 +56,7 @@
             width: 100%; padding: 12px; border-radius: 14px; 
             border: 1.5px solid #edf2f1; font-family: inherit; text-align: center;
             font-size: 0.95rem; outline: none; box-sizing: border-box;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
         
         input:focus { border-color: var(--primary); background: #f0f7f4; }
@@ -93,20 +93,17 @@
 
     <div id="coursesList"></div>
 
-            <footer class="footer-note">
+    <footer class="footer-note">
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
             <p style="font-weight: bold; color: var(--primary); margin: 0 0 5px 0; font-size: 1rem;">
                 إعداد وتصميم: أ. نورة القثامي
             </p>
-            
             <a href="mailto:norah.a@tvtc.gov" style="text-decoration: none; color: #555; font-size: 0.85rem; margin-bottom: 5px; dir: ltr;">
                 📧 norah.a@tvtc.gov
             </a>
-
             <p style="margin: 5px 0; color: #718096; font-size: 0.8rem; line-height: 1.6;">
                 قسم الحاسب وتقنية المعلومات | 1447هـ - 2026م
             </p>
-
             <div style="margin-top: 15px; opacity: 0.8;">
                 <a href="https://www.freecounterstat.com" target="_blank">
                     <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0" title="عداد الزيارات" alt="visitor counter">
@@ -114,8 +111,6 @@
             </div>
         </div>
     </footer>
-
-
 </div>
 
 <script>
@@ -132,7 +127,7 @@
         renderCourses();
     }
 
-        function renderCourses() {
+    function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
         
@@ -140,6 +135,10 @@
             const weeklyH = parseFloat(course.weeklyHours) || 0;
             const totalSemHours = weeklyH * 16;
             const limit = totalSemHours * 0.20;
+            
+            // تصفير غياب الساعة الواحدة إذا كانت الساعات الأسبوعية زوجية لضمان دقة الحساب
+            if (weeklyH % 2 === 0) { course.absent1 = '0'; }
+
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
             const percent = totalSemHours > 0 ? (currentAbsent / totalSemHours) * 100 : 0;
             const remaining = Math.floor(limit - currentAbsent);
@@ -153,28 +152,23 @@
                 statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; 
             }
 
-            // --- منطق التفكيك الذكي للساعات المتبقية ---
             let advice = "";
             if (percent < 20) {
-                const lecturesOf2 = Math.floor(remaining / 2); // كم محاضرة ساعتين
-                const lecturesOf1 = remaining % 2; // الباقي (ساعة واحدة)
-                
-                let details = "";
-                if (lecturesOf2 > 0 && lecturesOf1 > 0) {
-                    details = `يُعادل <b>${lecturesOf2}</b> محاضرة (ساعتين) و <b>${lecturesOf1}</b> محاضرة (ساعة واحدة)`;
-                } else if (lecturesOf2 > 0) {
-                    details = `يُعادل <b>${lecturesOf2}</b> محاضرة (ساعتين)`;
-                } else if (lecturesOf1 > 0) {
-                    details = `يُعادل <b>${lecturesOf1}</b> محاضرة (ساعة واحدة)`;
-                }
-
-                advice = `<div class="advice-box">متبقي لك <b>${remaining}</b> ساعة (${details}) قبل الحرمان</div>`;
+                const lecturesOf2 = Math.floor(remaining / 2);
+                const lecturesOf1 = remaining % 2;
+                let details = (lecturesOf2 > 0 && lecturesOf1 > 0) ? `<b>${lecturesOf2}</b> (ساعتين) و <b>${lecturesOf1}</b> (ساعة)` : 
+                              (lecturesOf2 > 0) ? `<b>${lecturesOf2}</b> (ساعتين)` : `<b>${lecturesOf1}</b> (ساعة)`;
+                advice = `<div class="advice-box">متبقي لك <b>${remaining}</b> ساعة (يُعادل ${details}) قبل الحرمان</div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
             }
 
             const card = document.createElement('div');
             card.className = 'course-card';
+            
+            // منطق الإظهار/الإخفاء بناءً على الساعات (فردي أو زوجي)
+            const isOdd = (weeklyH % 2 !== 0);
+
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
@@ -189,30 +183,29 @@
                 <div style="margin-top: 10px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">كم محاضرة غبت حسب جدولك؟</div>
                 <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 15px;">
 
+                ${isOdd ? `
                 <div class="input-group">
                     <label>🔹 محاضرة مدتها ساعة واحدة:</label>
-                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder=" عدد مرات الغياب" oninput="handleInput(${course.id}, 'absent1', this)">
+                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
                 </div>
+                ` : ''}
 
                 <div class="input-group">
                     <label>🔹 محاضرة مدتها ساعتان:</label>
-                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="عدد مرات الغياب " oninput="handleInput(${course.id}, 'absent2', this)">
+                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
                 <div class="result-area ${statusClass}">
                     <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom:8px;">
                         ${msg}
                     </div>
-
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
                         <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096; font-weight:600;">من الحد المسموح (20%)</span>
+                        <span style="font-size:0.85rem; color:#718096; font-weight:600;">من أصل 20%</span>
                     </div>
-
                     <div class="progress-bar">
                         <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
                     </div>
-
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:bold;">
                         <span>إجمالي غيابك: ${currentAbsent} ساعة</span>
                         <span>مسموح لك: ${limit.toFixed(0)} ساعة</span>
@@ -224,7 +217,6 @@
         });
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
-
 
     function handleInput(id, field, el) {
         el.value = fixNumbers(el.value);
