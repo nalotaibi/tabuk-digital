@@ -200,9 +200,9 @@ function calculate() {
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
 
-        if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 خطر مرتفع"; }
+        if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
         else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك ممتاز"; }
+        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن"; }
     }
 
     progressBar.style.background=color;
