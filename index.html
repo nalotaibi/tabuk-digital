@@ -7,10 +7,10 @@
     <style>
         :root {
             --primary: #1d5c41;
-            --safe: #22c55e;      /* أخضر */
-            --warning: #facc15;   /* أصفر */
-            --orange: #fb923c;    /* برتقالي */
-            --danger: #ef4444;    /* أحمر */
+            --safe: #22c55e;
+            --warning: #facc15;
+            --orange: #fb923c;
+            --danger: #ef4444;
             --badge-bg: #e8f5e9;
             --badge-text: #2e7d32;
             --gray: #718096;
@@ -58,6 +58,10 @@
             background: white; 
             text-align: center;
         }
+
+        /* إخفاء أسهم الزيادة والنقصان في حقل الأرقام لشكل أنظف */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29, 92, 65, 0.1); }
 
@@ -112,11 +116,11 @@
             <div class="absent-grid">
                 <div class="input-box">
                     <label>غياب (مدة المحاضرة ساعة)</label>
-                    <input type="text" id="count1" oninput="fixArabicNumbers(this)" placeholder="أدخل عدد المرات">
+                    <input type="number" id="count1" oninput="fixArabicNumbers(this)" placeholder="0" min="0">
                 </div>
                 <div class="input-box">
                     <label>غياب (مدة المحاضرة ساعتين)</label>
-                    <input type="text" id="count2" oninput="fixArabicNumbers(this)" placeholder="أدخل عدد المرات">
+                    <input type="number" id="count2" oninput="fixArabicNumbers(this)" placeholder="0" min="0">
                 </div>
             </div>
             <button class="reset-btn" onclick="resetApp()">↺ مسح البيانات</button>
@@ -150,13 +154,13 @@
                 </div>
             </div>
 
-            <div id="extraInfo" style="margin-top:12px;font-size:0.85rem"></div>
+            <div id="extraInfo" style="margin-top:12px;font-size:0.85rem; line-height: 1.6;"></div>
 
-            <button onclick="toggleExplain()" style="margin-top:8px;background:none;border:none;color:var(--primary);cursor:pointer;font-size:0.8rem;font-weight:bold;">
+            <button onclick="toggleExplain()" style="margin-top:12px;background:none;border:none;color:var(--primary);cursor:pointer;font-size:0.8rem;font-weight:bold;text-decoration:underline;">
                 🔎 كيف تم الحساب؟
             </button>
-            <div id="explainBox" style="display:none;font-size:0.75rem;margin-top:5px;color:#64748b">
-                الحد الأقصى = الساعات الأسبوعية × 16 × 20٪
+            <div id="explainBox" style="display:none;font-size:0.75rem;margin-top:8px;color:#64748b;background:#fff;padding:8px;border-radius:10px;border:1px solid #eee;">
+                المعادلة: (الساعات الأسبوعية × 16 أسبوع) × 20٪
             </div>
         </div>
 
@@ -175,7 +179,7 @@ function toggleExplain() {
 
 function fixArabicNumbers(el) {
     const arabicDigits = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
-    let val = el.value;
+    let val = el.value.toString();
     for (let i = 0; i < 10; i++) { val = val.replace(arabicDigits[i], i); }
     el.value = val.replace(/[^\d]/g,'');
     calculate();
@@ -214,24 +218,29 @@ function calculate() {
     if(percent >= 20){
         color="var(--danger)"; mode="danger-mode";
         leftRes.innerText="🚫 حرمان";
-        msg="تجاوزتِ الحد المسموح.";
+        msg="<span style='color:var(--danger); font-weight:bold;'>تجاوزتِ الحد المسموح.</span>";
     }
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
 
         if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
-        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن"; }
+        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه: بدأتِ في منطقة القلق"; }
+        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظي على حضورك"; }
     }
 
     progressBar.style.background=color;
     statusBox.className="result-display "+mode;
 
-    extraInfo.innerHTML=`${msg}<br>
-    يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة)<br>
-    أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
+    if(percent < 20) {
+        extraInfo.innerHTML=`${msg}<br>
+        يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
+        أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
+    } else {
+        extraInfo.innerHTML=msg;
+    }
 }
 
+// تشغيل الحسابات لأول مرة عند تحميل الصفحة
 window.onload = calculate;
 </script>
 
