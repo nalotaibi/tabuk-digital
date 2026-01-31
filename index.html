@@ -88,7 +88,7 @@
 
     <div class="action-bars">
         <button class="add-btn" onclick="addNewCourse()">➕ إضافة مقرر جديد</button>
-        <button class="reset-all" onclick="clearEverything()">🗑️ إعادة ضبط الغياب</button>
+        <button class="reset-all" onclick="clearEverything()"> إعادة ضبط الغياب</button>
     </div>
 
     <div id="coursesList"></div>
@@ -170,7 +170,7 @@
                 } else {
                     details = `أقل من ساعة واحدة`;
                 }
-                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة (يُعادل ${details}) قبل الحرمان</div>`;
+                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة (يُعادل ${details})</div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (${limit.toFixed(1)} ساعة)</div>`;
             }
