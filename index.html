@@ -126,12 +126,11 @@
     }
 
     // عرض وتحديث جميع البطاقات
-    function renderCourses() {
+        function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
         
         courses.forEach(course => {
-            // الحسابات البرمجية
             const weeklyH = parseFloat(course.weeklyHours);
             const totalSemHours = weeklyH * 16;
             const limit = totalSemHours * 0.20;
@@ -139,69 +138,53 @@
             const percent = (currentAbsent / totalSemHours) * 100;
             const remaining = limit - currentAbsent;
 
-            // تحديد الحالة واللون
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
             if (percent >= 20) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; }
             else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربتِ من الحرمان'; }
             else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدكِ بالنقصان'; }
 
-            // إنشاء النصيحة الذكية
-            let advice = "";
-            if(percent < 20) {
-                advice = `<div class="advice-box">
-                    يمكنك الغياب <b>${Math.floor(remaining)}</b> محاضرة (كل محاضرة ساعة )<br>
-                    أو <b>${Math.floor(remaining/2)}</b> محاضرة (كل محاضرة ساعتين)
-                </div>`;
-            } else {
-                advice = `<div class="advice-box" style="color:var(--danger)">لقد تجاوزتِ الحد المسموح به للغياب.</div>`;
-            }
+            let advice = percent < 20 
+                ? `<div class="advice-box">يمكنكِ الغياب <b>${Math.floor(remaining)}</b> ساعة إضافية قبل الحرمان</div>` 
+                : `<div class="advice-box" style="color:var(--danger)">تجاوزتِ الحد المسموح (20%)</div>`;
 
-            // بناء هيكل البطاقة
             const card = document.createElement('div');
             card.className = 'course-card';
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
-                <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)" placeholder="أدخلي اسم المادة">
+                <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="grid-inputs">
-                    <div class="input-group">
-                        <label>ساعات المقرر الأسبوعية</label>
+                    <div class="input-group"><label>الساعات الأسبوعية</label>
                         <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                             ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                         </select>
                     </div>
-                    <div class="input-group">
-                        <label>غياب (ساعة)</label>
-                        <input type="number" value="${course.absent1}" placeholder="0" oninput="updateCourse(${course.id}, 'absent1', this.value)">
+                    <div class="input-group"><label>غياب (1 ساعة)</label>
+                        <input type="number" value="${course.absent1}" oninput="updateCourse(${course.id}, 'absent1', this.value)">
                     </div>
-                </div>
-
-                <div class="input-group" style="margin-bottom:15px;">
-                    <label>غياب (ساعتين / محاضرة كاملة)</label>
-                    <input type="number" value="${course.absent2}" placeholder="0" oninput="updateCourse(${course.id}, 'absent2', this.value)">
                 </div>
 
                 <div class="result-area ${statusClass}">
-                    <div style="font-size:0.8rem; color:#666;">الرصيد المتبقي قبل الحرمان</div>
-                    <div style="font-size:1.5rem; font-weight:800; color:var(--primary); margin:5px 0;">
-                        ${percent >= 20 ? 'تجاوز الحد' : remaining.toFixed(1) + ' ساعة'}
-                    </div>
-                    <div style="font-size:0.8rem; font-weight:bold; color:${statusColor}">${msg}</div>
+                    <div style="font-size:0.8rem; color:#666; margin-bottom:5px;">مؤشر الانضباط الأكاديمي</div>
                     
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:${Math.min((currentAbsent/limit)*100, 100)}%; background:${statusColor}"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.9rem; color:#718096;">من الحد المسموح (20%)</span>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:600;">
-                        <span>النسبة: ${percent.toFixed(1)}%</span>
-                        <span>إجمالي الغياب: ${currentAbsent} ساعة</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555;">
+                        <span>غيابك الحالي: ${currentAbsent} ساعة</span>
+                        <span>ساعات الحرمان: ${limit.toFixed(1)} ساعة</span>
                     </div>
                     ${advice}
                 </div>
             `;
             list.appendChild(card);
         });
-        // حفظ البيانات في ذاكرة الهاتف تلقائياً
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
 
