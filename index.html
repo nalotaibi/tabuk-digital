@@ -154,7 +154,7 @@
             }
 
             let advice = percent < 20 
-                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرات كاملة) قبل الحرمان</div>` 
+                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة مدتها ساعتين) قبل الحرمان</div>` 
                 : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
 
             const card = document.createElement('div');
@@ -170,17 +170,17 @@
                     </select>
                 </div>
 
-                <div style="margin-top: 10px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">كم محاضرة غبتِ حسب جدولك؟</div>
+                <div style="margin-top: 10px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">كم محاضرة غبت حسب جدولك؟</div>
                 <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 15px;">
 
                 <div class="input-group">
-                    <label>🔹 محاضرات مدتها ساعة واحدة:</label>
-                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="مثال: 2" oninput="handleInput(${course.id}, 'absent1', this)">
+                    <label>🔹 محاضرة مدتها ساعة واحدة:</label>
+                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder=" عدد مرات الغياب" oninput="handleInput(${course.id}, 'absent1', this)">
                 </div>
 
                 <div class="input-group">
-                    <label>🔹 محاضرات مدتها ساعتان:</label>
-                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="مثال: 3" oninput="handleInput(${course.id}, 'absent2', this)">
+                    <label>🔹 محاضرة مدتها ساعتان:</label>
+                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="عدد مرات الغياب " oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
                 <div class="result-area ${statusClass}">
