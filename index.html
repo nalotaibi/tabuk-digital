@@ -149,20 +149,20 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label>⏱️ كم ساعة تدرسين أسبوعياً؟</label>
+                    <label> اختار عدد ساعات المقرر الأسبوعية</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label>📝 كم محاضرة (ساعة واحدة) غبتِ فيها؟</label>
-                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="أدخلي عدد المحاضرات" oninput="handleInput(${course.id}, 'absent1', this)">
+                    <label> اكتب عدد المحاضرات التي غبت فيها (مدتها ساعة بالجدول)</label>
+                    <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="أكتب عدد المحاضرات" oninput="handleInput(${course.id}, 'absent1', this)">
                 </div>
 
                 <div class="input-group">
-                    <label>📚 كم محاضرة (ساعتين) غبتِ فيها؟</label>
-                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="أدخلي عدد المحاضرات" oninput="handleInput(${course.id}, 'absent2', this)">
+                    <label>اكتب عدد المحاضرات التي غلت فيها (مدتها ساعتين بالجدول)</label>
+                    <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="أكتب عدد المحاضرات" oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
                 <div class="result-area ${statusClass}">
