@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منبه الغياب الذكي - رقمية تبوك</title>
+    <title>منبه الغياب الذكي</title>
     <style>
         :root {
             --primary: #1d5c41;
@@ -38,7 +38,7 @@
         }
 
         .app-header-centered { text-align: center; margin-bottom: 25px; }
-        .college-logo img { width: 140px; height: auto; margin-bottom: 10px; }
+        .college-logo img { width: 175px; height: auto; margin-bottom: 10px; }
         .header-text h1 { margin: 5px 0; font-size: 1.5rem; color: var(--primary); font-weight: 800; }
         .system-badge { display: inline-block; padding: 4px 14px; background-color: var(--badge-bg); color: var(--badge-text); border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
@@ -73,11 +73,11 @@
 <div class="glass-card">
     <header class="app-header-centered">
         <div class="college-logo">
-            <img src="IMG_1800.png" alt="شعار المؤسسة">
+            <img src="IMG_1800.png" alt="شعار الكلية الرقمية">
         </div>
         <div class="header-text">
             <h1>منبه الغياب الذكي</h1>
-            <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
+            <span class="system-badge">نظام 16 أسبوعاً (20%)</span>
         </div>
     </header>
 
@@ -152,18 +152,18 @@ function calculate() {
         color="var(--danger)";
         mode="danger-mode";
         leftRes.innerText="🚫 حرمان";
-        msg="تجاوزتِ الحد المسموح.";
+        msg="تجاوزت الحد المسموح.";
         extraInfo.innerHTML = msg;
     }
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
 
-        if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربتِ من حد الحرمان"; }
+        if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
         else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن"; }
+        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظ على حضورك"; }
 
         extraInfo.innerHTML=`${msg}<br>
-        يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة)<br>
+        يمكنك الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة)<br>
         أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
     }
 
