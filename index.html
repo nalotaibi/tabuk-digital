@@ -59,7 +59,6 @@
             text-align: center;
         }
 
-        /* إخفاء أسهم الزيادة والنقصان في حقل الأرقام لشكل أنظف */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
@@ -81,7 +80,6 @@
         .progress-thumb { height: 100%; width: 0%; transition: 1s ease-in-out; }
         
         .app-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #d1d9e6; text-align: center; }
-        .form-group { text-align: center; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -101,8 +99,8 @@
         </header>
 
         <div class="input-container">
-            <div class="form-group">
-                <label>عدد ساعات المقرر الأسبوعية</label>
+            <div class="form-group" style="text-align:center; margin-bottom:15px;">
+                <label style="display:block; font-size:0.85rem; font-weight:600; color:#4a5568; margin-bottom:8px;">عدد ساعات المقرر الأسبوعية</label>
                 <select id="courseHours" onchange="calculate()">
                     <option value="1">1 ساعة</option>
                     <option value="2">2 ساعة</option>
@@ -115,12 +113,12 @@
 
             <div class="absent-grid">
                 <div class="input-box">
-                    <label>غياب (مدة المحاضرة ساعة)</label>
-                    <input type="number" id="count1" oninput="fixArabicNumbers(this)" placeholder="0" min="0">
+                    <label>غياب (مدة ساعة)</label>
+                    <input type="text" inputmode="numeric" id="count1" oninput="fixAndCalc(this)" placeholder="0">
                 </div>
                 <div class="input-box">
-                    <label>غياب (مدة المحاضرة ساعتين)</label>
-                    <input type="number" id="count2" oninput="fixArabicNumbers(this)" placeholder="0" min="0">
+                    <label>غياب (مدة ساعتين)</label>
+                    <input type="text" inputmode="numeric" id="count2" oninput="fixAndCalc(this)" placeholder="0">
                 </div>
             </div>
             <button class="reset-btn" onclick="resetApp()">↺ مسح البيانات</button>
@@ -177,11 +175,20 @@ function toggleExplain() {
     box.style.display = (box.style.display === 'none') ? 'block' : 'none';
 }
 
-function fixArabicNumbers(el) {
-    const arabicDigits = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
-    let val = el.value.toString();
-    for (let i = 0; i < 10; i++) { val = val.replace(arabicDigits[i], i); }
-    el.value = val.replace(/[^\d]/g,'');
+function fixAndCalc(el) {
+    // تحويل الأرقام العربية إلى إنجليزية
+    const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+    const englishDigits = '0123456789';
+    let val = el.value;
+    
+    let converted = '';
+    for (let char of val) {
+        const index = arabicDigits.indexOf(char);
+        converted += (index !== -1) ? englishDigits[index] : char;
+    }
+    
+    // السماح فقط بالأرقام
+    el.value = converted.replace(/[^\d]/g, '');
     calculate();
 }
 
@@ -222,7 +229,6 @@ function calculate() {
     }
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
-
         if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
         else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه: بدأتِ في منطقة القلق"; }
         else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظي على حضورك"; }
@@ -235,12 +241,9 @@ function calculate() {
         extraInfo.innerHTML=`${msg}<br>
         يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
         أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
-    } else {
-        extraInfo.innerHTML=msg;
-    }
+    } else { extraInfo.innerHTML=msg; }
 }
 
-// تشغيل الحسابات لأول مرة عند تحميل الصفحة
 window.onload = calculate;
 </script>
 
