@@ -65,6 +65,23 @@
         .flex-inputs > div { flex: 1; }
         .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; text-align: center; }
 
+        /* تنسيق أيقونة المعلومة */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            background: #cbd5e0;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            margin-right: 4px;
+            cursor: help;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
         .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
         .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
@@ -151,17 +168,14 @@
                 const remHours = Math.floor(remaining); 
                 let detail = "";
 
-                // التعديلات الجديدة على صياغة الجملة حسب طلبك:
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
                     const word = (count >= 3 && count <= 10) ? "محاضرات" : (count === 2) ? "محاضرتين" : "محاضرة";
                     detail = `<b>${count}</b> ${word}`;
                 } else {
-                    // الساعات 3 و 5 و 6 تبقى بالتفصيل القديم
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
-                    
                     if (lec2 > 0 && lec1 > 0) {
                         let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
                         detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
@@ -170,11 +184,8 @@
                         detail = `<b>${lec2}</b> ${w} (ساعتين)`;
                     } else if (lec1 > 0) {
                         detail = `<b>1</b> محاضرة (ساعة)`;
-                    } else { 
-                        detail = "أقل من ساعة"; 
-                    }
+                    } else { detail = "أقل من ساعة"; }
                 }
-                
                 advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة: يُعادل ${detail}</div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
@@ -207,7 +218,6 @@
                             <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                         </div>
                         ` : ''}
-                        
                         ${showAbsent1 ? `
                         <div>
                             ${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعة)</span>'}
@@ -229,9 +239,8 @@
                     
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
-                        <span>حد الحرمان: ${limit.toFixed(1)} ساعة</span>
+                        <span>حد الحرمان: ${limit.toFixed(1)} ساعة <span class="info-icon" title="المعادلة: (${weeklyH} ساعات × 16 أسبوع) × 20% = ${limit.toFixed(1)}">i</span></span>
                     </div>
-
                     ${advice}
                 </div>
             `;
@@ -249,13 +258,10 @@
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
-            
-            // إصلاح التنقل: تصفير الغيابات عند تغيير عدد الساعات الأسبوعية
             if (field === 'weeklyHours') {
                 courses[index].absent1 = '';
                 courses[index].absent2 = '';
             }
-            
             renderCourses();
         }
     }
