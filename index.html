@@ -151,11 +151,14 @@
                 const remHours = Math.floor(remaining); 
                 let detail = "";
 
-                // تعديل المنطق حسب طلبك لتعديل الجمل:
-                if (weeklyH === 1) {
-                    // للمقررات ذات الساعة الواحدة، نحسب الساعات مباشرة كمحاضرات فئة ساعة
-                    detail = `<b>${remHours}</b> محاضرة (ساعة)`;
+                // التعديلات الجديدة على صياغة الجملة حسب طلبك:
+                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
+                    const unit = (weeklyH === 1) ? 1 : 2;
+                    const count = Math.floor(remHours / unit);
+                    const word = (count >= 3 && count <= 10) ? "محاضرات" : (count === 2) ? "محاضرتين" : "محاضرة";
+                    detail = `<b>${count}</b> ${word}`;
                 } else {
+                    // الساعات 3 و 5 و 6 تبقى بالتفصيل القديم
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
                     
@@ -242,12 +245,12 @@
         updateCourse(id, field, el.value);
     }
 
-        function updateCourse(id, field, value) {
+    function updateCourse(id, field, value) {
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
             
-            // التعديل الجديد: إذا تم تغيير عدد الساعات، صفر غيابات المقرر لتجنب تداخل الحسابات
+            // إصلاح التنقل: تصفير الغيابات عند تغيير عدد الساعات الأسبوعية
             if (field === 'weeklyHours') {
                 courses[index].absent1 = '';
                 courses[index].absent2 = '';
@@ -256,7 +259,6 @@
             renderCourses();
         }
     }
-
 
     function deleteCourse(id) {
         if(confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); }
