@@ -149,19 +149,28 @@
             let advice = "";
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining); 
-                const lec2 = Math.floor(remHours / 2);
-                const lec1 = remHours % 2;
-                
                 let detail = "";
-                if (lec2 > 0 && lec1 > 0) {
-                    let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
-                    detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> (ساعة)`;
-                } else if (lec2 > 0) {
-                    let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : "محاضرة";
-                    detail = `<b>${lec2}</b> ${w} (ساعتين)`;
-                } else if (lec1 > 0) {
-                    detail = `<b>1</b> محاضرة (ساعة)`;
-                } else { detail = "أقل من ساعة"; }
+
+                // تعديل المنطق حسب طلبك لتعديل الجمل:
+                if (weeklyH === 1) {
+                    // للمقررات ذات الساعة الواحدة، نحسب الساعات مباشرة كمحاضرات فئة ساعة
+                    detail = `<b>${remHours}</b> محاضرة (ساعة)`;
+                } else {
+                    const lec2 = Math.floor(remHours / 2);
+                    const lec1 = remHours % 2;
+                    
+                    if (lec2 > 0 && lec1 > 0) {
+                        let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
+                    } else if (lec2 > 0) {
+                        let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w} (ساعتين)`;
+                    } else if (lec1 > 0) {
+                        detail = `<b>1</b> محاضرة (ساعة)`;
+                    } else { 
+                        detail = "أقل من ساعة"; 
+                    }
+                }
                 
                 advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة: يُعادل ${detail}</div>`;
             } else {
@@ -171,7 +180,6 @@
             const card = document.createElement('div');
             card.className = 'course-card';
 
-            // المنطق البرمجي الجديد:
             const isSingleType = (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6);
             const showAbsent2 = (weeklyH >= 2); 
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
