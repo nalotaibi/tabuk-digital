@@ -132,7 +132,7 @@
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
             const totalHours = weeklyH * 16;
-            const limit = totalHours * 0.20; // معادلة الـ 20% بدقة
+            const limit = totalHours * 0.20; 
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
             const percent = (currentAbsent / totalHours) * 100 || 0;
             const remaining = limit - currentAbsent;
@@ -170,7 +170,10 @@
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            const isOdd = (weeklyH % 2 !== 0);
+            
+            // شروط عرض الخانات بناءً على عدد الساعات
+            const showAbsent2 = (weeklyH >= 2); 
+            const showAbsent1 = (weeklyH === 1 || weeklyH >= 3);
 
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
@@ -186,11 +189,14 @@
                 <div class="input-group">
                     <label> عدد مرات الغياب </label>
                     <div class="flex-inputs">
+                        ${showAbsent2 ? `
                         <div>
                             <span class="input-sub-label">(محاضرة فئة ساعتين)</span>
                             <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                         </div>
-                        ${isOdd ? `
+                        ` : ''}
+                        
+                        ${showAbsent1 ? `
                         <div>
                             <span class="input-sub-label">(محاضرة فئة ساعة)</span>
                             <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
