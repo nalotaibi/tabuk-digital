@@ -242,13 +242,21 @@
         updateCourse(id, field, el.value);
     }
 
-    function updateCourse(id, field, value) {
+        function updateCourse(id, field, value) {
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
+            
+            // التعديل الجديد: إذا تم تغيير عدد الساعات، صفر غيابات المقرر لتجنب تداخل الحسابات
+            if (field === 'weeklyHours') {
+                courses[index].absent1 = '';
+                courses[index].absent2 = '';
+            }
+            
             renderCourses();
         }
     }
+
 
     function deleteCourse(id) {
         if(confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); }
