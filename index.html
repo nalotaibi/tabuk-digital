@@ -131,9 +131,10 @@
         
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const limit = (weeklyH * 16) * 0.20;
+            const totalHours = weeklyH * 16;
+            const limit = totalHours * 0.20; // معادلة الـ 20% بدقة
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
-            const percent = (currentAbsent / (weeklyH * 16)) * 100 || 0;
+            const percent = (currentAbsent / totalHours) * 100 || 0;
             const remaining = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
@@ -176,14 +177,14 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label>عدد الساعات الأسبوعية</label>
+                    <label>عدد الساعات الأسبوعية للمقرر</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label>  عدد مرات الغياب </label>
+                    <label>كم محاضرة غبت؟</label>
                     <div class="flex-inputs">
                         <div>
                             <span class="input-sub-label">(ساعتين)</span>
@@ -199,12 +200,20 @@
                 </div>
 
                 <div class="result-area ${statusClass}">
-                    <div style="font-size:0.9rem; font-weight:800; color:${statusColor}; margin-bottom:5px;">${msg}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <div style="font-size:0.9rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
                         <span style="font-size:1.6rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.75rem; color:#718096; font-weight:600;">الغياب الحالي: ${currentAbsent} ساعة</span>
+                        <span style="font-size:0.8rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                     </div>
+
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
+                    
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:600; margin-top:5px;">
+                        <span>غيابك: ${currentAbsent} ساعة</span>
+                        <span>حد الحرمان: ${limit.toFixed(1)} ساعة</span>
+                    </div>
+
                     ${advice}
                 </div>
             `;
