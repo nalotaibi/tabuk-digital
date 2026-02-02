@@ -3,24 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة الغياب - تعليمات الإضافة</title>
+    <title>حاسبة الغياب الذكية</title>
     <style>
-        /* --- تنسيق الخلفية المعتمة والتوسط --- */
+        /* CSS - التنسيق والتعديلات البصرية */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* حاوية النافذة المنبثقة */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* تعتيم الخلفية */
-            display: flex;
-            justify-content: center; /* يتوسط أفقياً */
-            align-items: center;    /* يتوسط رأسياً */
+            background: rgba(0, 0, 0, 0.6); /* خلفية معتمة */
+            display: flex; /* لضمان التوسط */
+            justify-content: center;
+            align-items: center;
             z-index: 9999;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* --- تنسيق صندوق التعليمات (البوكس الأبيض) --- */
+        /* تصميم البوكس (البوب أب) */
         .instruction-card {
             background: #ffffff;
             width: 90%;
@@ -29,61 +39,64 @@
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             text-align: right;
-            position: relative;
             animation: fadeIn 0.3s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        /* --- العناوين والنصوص --- */
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         .modal-title {
+            font-size: 1.3rem;
+            color: #1a5e3a; /* أخضر تقني */
+            margin: 10px 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            color: #2d3436;
-            font-size: 1.25rem;
-            margin-top: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+        }
+
+        .platform-item {
             margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
         }
 
-        .platform-section {
-            margin-bottom: 25px;
-        }
-
-        .platform-header {
+        .platform-label {
+            font-weight: bold;
             font-size: 1.1rem;
-            color: #1a5e3a; /* لون مستوحى من شعارات المؤسسات التقنية */
-            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
         }
 
-        .instruction-text {
+        .steps {
             color: #555;
-            line-height: 1.7;
-            margin: 0;
-            padding-right: 28px;
             font-size: 0.95rem;
+            line-height: 1.6;
+            padding-right: 10px;
+            margin: 0;
         }
 
         .highlight {
-            color: #2d3436;
-            font-weight: 700;
-            background: #f1f2f6;
-            padding: 2px 6px;
-            border-radius: 4px;
+            color: #1a5e3a;
+            font-weight: 600;
         }
 
-        /* --- زر الإغلاق --- */
-        .close-btn {
+        /* زر الإغلاق */
+        .confirm-btn {
             width: 100%;
             padding: 14px;
             background-color: #1a5e3a;
@@ -97,53 +110,68 @@
             margin-top: 10px;
         }
 
-        .close-btn:hover {
+        .confirm-btn:hover {
             background-color: #144a2e;
         }
 
-        /* أيقونات المشاركة */
-        .symbol {
+        .icon-small {
             font-size: 1.2rem;
-            vertical-align: middle;
         }
     </style>
 </head>
 <body>
 
-    <div class="modal-overlay" id="instructionModal">
+    <div id="instructionModal" class="modal-overlay">
         <div class="instruction-card">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span>📱</span> إضافة الحاسبة للشاشة الرئيسية
+                </h2>
+            </div>
             
-            <h2 class="modal-title">
-                <span>📱</span> إضافة الحاسبة للشاشة الرئيسية
-            </h2>
+            <div class="divider"></div>
 
-            <div class="platform-section">
-                <div class="platform-header">
-                    <span>🍎</span> لمستخدمي iPhone (Safari):
+            <div class="platform-item">
+                <div class="platform-label">
+                    <span class="icon-small">🍎</span> لمستخدمي iPhone (Safari):
                 </div>
-                <p class="instruction-text">
-                    اضغط على زر المشاركة <span class="symbol">⎋</span> ثم اختر 
+                <p class="steps">
+                    اضغط على زر المشاركة <span style="font-size: 1.2rem;">⎋</span> ثم اختر 
                     <span class="highlight">"إضافة إلى الشاشة الرئيسية"</span>.
                 </p>
             </div>
 
-            <div class="platform-section">
-                <div class="platform-header">
-                    <span>🤖</span> لمستخدمي Android (Chrome):
+            <div class="platform-item">
+                <div class="platform-label">
+                    <span class="icon-small">🤖</span> لمستخدمي Android (Chrome):
                 </div>
-                <p class="instruction-text">
-                    اضغط على النقاط الثلاث <span class="symbol">⋮</span> ثم اختر 
+                <p class="steps">
+                    اضغط على النقاط الثلاث <span style="font-weight: bold;">⋮</span> ثم اختر 
                     <span class="highlight">"إضافة إلى الشاشة الرئيسية"</span>.
                 </p>
             </div>
 
-            <button class="close-btn" onclick="closeModal()">فهمت ذلك</button>
+            <button class="confirm-btn" onclick="closeModal()">فهمت ذلك</button>
         </div>
     </div>
 
     <script>
         function closeModal() {
-            document.getElementById('instructionModal').style.display = 'none';
+            const modal = document.getElementById('instructionModal');
+            // إضافة تأثير اختفاء بسيط
+            modal.style.transition = "opacity 0.3s ease";
+            modal.style.opacity = "0";
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 300);
+        }
+
+        // لإغلاق النافذة عند الضغط خارج البوكس الأبيض
+        window.onclick = function(event) {
+            const modal = document.getElementById('instructionModal');
+            if (event.target == modal) {
+                closeModal();
+            }
         }
     </script>
 
