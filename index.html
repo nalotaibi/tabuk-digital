@@ -43,7 +43,6 @@
             max-width: 400px;
             width: 100%;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
         .modal-header { font-weight: 800; color: var(--primary); margin-bottom: 20px; text-align: center; font-size: 1.1rem; }
         .guide-item { margin-bottom: 18px; font-size: 0.9rem; line-height: 1.6; color: #333; }
@@ -60,28 +59,36 @@
             font-weight: bold;
         }
 
-        /* شريط التثبيت الجديد */
+        /* شريط التثبيت المصغر والأنيق */
         .install-banner {
             background: #ffffff;
-            border: 1.5px solid #e1e9e7;
-            padding: 18px;
-            border-radius: 22px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 1px solid #e1e9e7;
+            padding: 8px 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
+        
+        .install-text {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
         .install-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 20px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            white-space: nowrap;
         }
-        .install-btn:active { transform: scale(0.95); }
 
         .app-container { max-width: 450px; margin: 0 auto; }
         .header-section { text-align: center; margin-bottom: 20px; }
@@ -96,6 +103,7 @@
         .course-card { background: white; border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.06); border: 1px solid #e1e9e7; position: relative; }
         .delete-course { position: absolute; top: 18px; left: 18px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; padding: 5px; outline: none; background: transparent; }
+        
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 0.8rem; color: #444; margin-bottom: 6px; font-weight: 700; background: #f8faf9; padding: 4px 10px; border-right: 3px solid var(--primary); }
         
@@ -138,7 +146,7 @@
 
 <div class="app-container">
     <div class="install-banner">
-        <div style="margin-bottom: 10px; font-weight: 700; color: var(--primary); font-size: 0.95rem;">استخدمي الحاسبة كتطبيق على هاتفك</div>
+        <div class="install-text">استخدمي الحاسبة كتطبيق على هاتفك</div>
         <button class="install-btn" onclick="toggleModal(true)">طريقة الإضافة</button>
     </div>
 
@@ -178,9 +186,7 @@
         document.getElementById('guideModal').style.display = show ? 'flex' : 'none';
     }
 
-    function fixNumbers(str) {
-        return str.replace(/[٠-٩]/g, function(d) { return d.charCodeAt(0) - 1632; }).replace(/[^\d.]/g, '');
-    }
+    function fixNumbers(str) { return str.replace(/[٠-٩]/g, function(d) { return d.charCodeAt(0) - 1632; }).replace(/[^\d.]/g, ''); }
 
     function addNewCourse() {
         courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
@@ -190,7 +196,6 @@
     function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
-        
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
             const totalHours = weeklyH * 16;
@@ -208,16 +213,13 @@
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining); 
                 let detail = "";
-                // الصياغة المختصرة للساعات 1، 2، 4
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
                     const word = (count >= 3 && count <= 10) ? "محاضرات" : (count === 2) ? "محاضرتين" : "محاضرة";
                     detail = `<b>${count}</b> ${word}`;
                 } else {
-                    // الصياغة التفصيلية للساعات 3، 5، 6
-                    const lec2 = Math.floor(remHours / 2);
-                    const lec1 = remHours % 2;
+                    const lec2 = Math.floor(remHours / 2); const lec1 = remHours % 2;
                     if (lec2 > 0 && lec1 > 0) detail = `<b>${lec2}</b> محاضرات (ساعتين) و <b>1</b> محاضرة (ساعة)`;
                     else if (lec2 > 0) detail = `<b>${lec2}</b> محاضرات (ساعتين)`;
                     else if (lec1 > 0) detail = `<b>1</b> محاضرة (ساعة)`;
@@ -272,22 +274,15 @@
     }
 
     function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
-    
     function updateCourse(id, field, value) {
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
-            // تصفير البيانات عند تغيير عدد الساعات الأسبوعية لضمان التحديث
-            if (field === 'weeklyHours') {
-                courses[index].absent1 = '';
-                courses[index].absent2 = '';
-            }
+            if (field === 'weeklyHours') { courses[index].absent1 = ''; courses[index].absent2 = ''; }
             renderCourses();
         }
     }
-
     function deleteCourse(id) { if(confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
-    
     function clearEverything() { if(confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
     window.onload = renderCourses;
