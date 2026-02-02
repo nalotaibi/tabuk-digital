@@ -1,179 +1,289 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <link rel="apple-touch-icon" href="IMG_1813.png">
+    <link rel="icon" href="IMG_1813.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حاسبة الغياب الذكية</title>
     <style>
-        /* CSS - التنسيق والتعديلات البصرية */
+        :root {
+            --primary: #1d5c41;
+            --safe: #22c55e;
+            --warning: #facc15;
+            --orange: #fb923c;
+            --danger: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #f4f8f7 0%, #e0ece9 100%);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-gradient);
+            padding: 20px 10px;
+            direction: rtl;
+            min-height: 100vh;
         }
 
-        /* حاوية النافذة المنبثقة */
+        /* نافذة التعليمات (Modal) - تم تعديل المحاذاة هنا */
         .modal-overlay {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* خلفية معتمة */
-            display: flex; /* لضمان التوسط */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            padding: 20px;
         }
-
-        /* تصميم البوكس (البوب أب) */
-        .instruction-card {
-            background: #ffffff;
-            width: 90%;
-            max-width: 420px;
+        .modal-content {
+            background: white;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            text-align: right;
-            animation: fadeIn 0.3s ease-out;
+            border-radius: 24px;
+            max-width: 340px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center; /* ضمان توسط المحتوى */
         }
-
-        @keyframes fadeIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 1.3rem;
-            color: #1a5e3a; /* أخضر تقني */
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .divider {
-            height: 1px;
-            background: #eee;
-            margin: 15px 0;
-        }
-
-        .platform-item {
-            margin-bottom: 20px;
-        }
-
-        .platform-label {
-            font-weight: bold;
+        .modal-header { 
+            font-weight: 800; 
+            color: var(--primary); 
+            margin-bottom: 20px; 
             font-size: 1.1rem;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+        }
+        .guide-item { 
+            margin-bottom: 20px; 
+            font-size: 0.9rem; 
+            line-height: 1.6; 
             color: #333;
-            margin-bottom: 8px;
+            text-align: center;
         }
-
-        .steps {
-            color: #555;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            padding-right: 10px;
-            margin: 0;
+        .guide-item b { 
+            color: var(--primary); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 8px; 
+            font-size: 1rem;
         }
-
-        .highlight {
-            color: #1a5e3a;
-            font-weight: 600;
-        }
-
-        /* زر الإغلاق */
-        .confirm-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: #1a5e3a;
+        .close-modal {
+            background: var(--primary);
             color: white;
             border: none;
+            padding: 12px;
             border-radius: 12px;
-            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* شريط التثبيت المصغر والأنيق */
+        .install-banner {
+            background: #ffffff;
+            border: 1px solid #e1e9e7;
+            padding: 10px 15px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .install-text { font-weight: 600; color: var(--primary); font-size: 0.82rem; }
+        .install-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.78rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
+            white-space: nowrap;
         }
 
-        .confirm-btn:hover {
-            background-color: #144a2e;
-        }
+        /* باقي تنسيقات التطبيق */
+        .app-container { max-width: 450px; margin: 0 auto; }
+        .header-section { text-align: center; margin-bottom: 20px; }
+        .college-logo img { width: 180px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
+        .header-text h1 { margin: 0; font-size: 1.6rem; color: var(--primary); font-weight: 800; }
+        .system-badge { display: inline-block; margin-top: 8px; padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
 
-        .icon-small {
-            font-size: 1.2rem;
-        }
+        .action-bars { display: flex; gap: 10px; margin: 20px 0; }
+        .add-btn { flex: 2; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 12px rgba(29,92,65,0.2); }
+        .reset-all { flex: 1; padding: 14px; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 16px; cursor: pointer; font-weight: bold; }
+
+        .course-card { background: white; border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.06); border: 1px solid #e1e9e7; position: relative; }
+        .delete-course { position: absolute; top: 18px; left: 18px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; padding: 5px; outline: none; background: transparent; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.8rem; color: #444; margin-bottom: 6px; font-weight: 700; background: #f8faf9; padding: 4px 10px; border-right: 3px solid var(--primary); }
+        select, input { width: 100%; padding: 10px; border-radius: 12px; border: 1.5px solid #edf2f1; text-align: center; font-size: 0.95rem; outline: none; box-sizing: border-box; }
+        .flex-inputs { display: flex; gap: 8px; }
+        .flex-inputs > div { flex: 1; }
+        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #cbd5e0; color: white; border-radius: 50%; font-size: 0.75rem; margin-right: 5px; cursor: pointer; vertical-align: middle; }
+        
+        .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
+        .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
+        .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
+        .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; transition: 0.8s ease-in-out; }
+        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; }
+        .footer-note { text-align: center; font-size: 0.8rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="instructionModal" class="modal-overlay">
-        <div class="instruction-card">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <span>📱</span> إضافة الحاسبة للشاشة الرئيسية
-                </h2>
-            </div>
-            
-            <div class="divider"></div>
-
-            <div class="platform-item">
-                <div class="platform-label">
-                    <span class="icon-small">🍎</span> لمستخدمي iPhone (Safari):
-                </div>
-                <p class="steps">
-                    اضغط على زر المشاركة <span style="font-size: 1.2rem;">⎋</span> ثم اختر 
-                    <span class="highlight">"إضافة إلى الشاشة الرئيسية"</span>.
-                </p>
-            </div>
-
-            <div class="platform-item">
-                <div class="platform-label">
-                    <span class="icon-small">🤖</span> لمستخدمي Android (Chrome):
-                </div>
-                <p class="steps">
-                    اضغط على النقاط الثلاث <span style="font-weight: bold;">⋮</span> ثم اختر 
-                    <span class="highlight">"إضافة إلى الشاشة الرئيسية"</span>.
-                </p>
-            </div>
-
-            <button class="confirm-btn" onclick="closeModal()">فهمت ذلك</button>
+<div id="guideModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>📱</span>
+            <span>إضافة الحاسبة للشاشة الرئيسية</span>
         </div>
+        <div class="guide-item">
+            <b>🍏 لمستخدمات iPhone (Safari)</b>
+            اضغطي على زر المشاركة ⎋ ثم اختاري <br> "إضافة إلى الشاشة الرئيسية"
+        </div>
+        <div class="guide-item">
+            <b>🤖 لمستخدمات Android (Chrome)</b>
+            اضغطي على النقاط الثلاث ⋮ ثم اختاري <br> "إضافة إلى الشاشة الرئيسية"
+        </div>
+        <button class="close-modal" onclick="toggleModal(false)">فهمت ذلك</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="install-banner">
+        <div class="install-text">استخدمي الحاسبة كتطبيق على هاتفك</div>
+        <button class="install-btn" onclick="toggleModal(true)">طريقة الإضافة</button>
     </div>
 
-    <script>
-        function closeModal() {
-            const modal = document.getElementById('instructionModal');
-            // إضافة تأثير اختفاء بسيط
-            modal.style.transition = "opacity 0.3s ease";
-            modal.style.opacity = "0";
-            setTimeout(() => {
-                modal.style.display = "none";
-            }, 300);
-        }
+    <header class="header-section">
+        <div class="college-logo"><img src="IMG_1800.png" alt="Logo"></div>
+        <div class="header-text">
+            <h1>حاسبة الغياب الذكية</h1>
+            <span class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
+        </div>
+    </header>
 
-        // لإغلاق النافذة عند الضغط خارج البوكس الأبيض
-        window.onclick = function(event) {
-            const modal = document.getElementById('instructionModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
+    <div class="action-bars">
+        <button class="add-btn" onclick="addNewCourse()">➕ إضافة مقرر جديد</button>
+        <button class="reset-all" onclick="clearEverything()">إعادة ضبط</button>
+    </div>
 
+    <div id="coursesList"></div>
+
+    <footer class="footer-note">
+        <p style="font-weight: bold; color: var(--primary); margin: 0;">إعداد وتصميم: أ. نورة القثامي</p>
+        <p style="margin: 5px 0;">قسم الحاسب وتقنية المعلومات | 1447هـ - 2026م</p>
+        <div style="margin-top: 10px;">
+            <a href="https://www.freecounterstat.com" target="_blank">
+                <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0" title="عداد الزيارات">
+            </a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
+
+    function toggleModal(show) { document.getElementById('guideModal').style.display = show ? 'flex' : 'none'; }
+
+    function fixNumbers(str) { return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632).replace(/[^\d.]/g, ''); }
+
+    function addNewCourse() {
+        courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
+        renderCourses();
+    }
+
+    function renderCourses() {
+        const list = document.getElementById('coursesList');
+        list.innerHTML = '';
+        courses.forEach(course => {
+            const weeklyH = parseFloat(course.weeklyHours) || 0;
+            const totalHours = weeklyH * 16;
+            const limit = totalHours * 0.20; 
+            const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
+            const percent = (currentAbsent / totalHours) * 100 || 0;
+            const remaining = limit - currentAbsent;
+
+            let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
+            if (currentAbsent > limit) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; }
+            else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; }
+            else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; }
+
+            let advice = "";
+            if (currentAbsent <= limit) {
+                const remHours = Math.floor(remaining);
+                let detail = "";
+                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
+                    const count = Math.floor(remHours / (weeklyH === 1 ? 1 : 2));
+                    detail = `<b>${count}</b> محاضرة`;
+                } else {
+                    const lec2 = Math.floor(remHours / 2); const lec1 = remHours % 2;
+                    detail = lec2 > 0 ? `<b>${lec2}</b> محاضرات (ساعتين)` : `<b>1</b> محاضرة (ساعة)`;
+                }
+                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة غياب مسموح</div>`;
+            } else { advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح</div>`; }
+
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            card.innerHTML = `
+                <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+                <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
+                <div class="input-group">
+                    <label>عدد الساعات الأسبوعية للمقرر</label>
+                    <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
+                        ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>عدد غياباتك</label>
+                    <div class="flex-inputs">
+                        ${weeklyH >= 2 ? `<div><input type="text" placeholder="فئة ساعتين" value="${course.absent2}" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
+                        ${(weeklyH % 2 !== 0 || weeklyH === 1) ? `<div><input type="text" placeholder="فئة ساعة" value="${course.absent1}" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
+                    </div>
+                </div>
+                <div class="result-area ${statusClass}">
+                    <div style="font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.85rem; color:#718096;">من أصل 20%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+                        <span>غيابك الحالي: ${currentAbsent} ساعة</span>
+                        <span>حد الحرمان: ${limit.toFixed(1)} <span class="info-icon" onclick="alert('الحسبة: (${weeklyH} ساعات × 16 أسبوع) × 20%')">i</span></span>
+                    </div>
+                    ${advice}
+                </div>
+            `;
+            list.appendChild(card);
+        });
+        localStorage.setItem('myCourses', JSON.stringify(courses));
+    }
+
+    function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
+    function updateCourse(id, field, value) {
+        const index = courses.findIndex(c => c.id === id);
+        if (index !== -1) { 
+            courses[index][field] = value; 
+            if (field === 'weeklyHours') { courses[index].absent1 = ''; courses[index].absent2 = ''; }
+            renderCourses(); 
+        }
+    }
+    function deleteCourse(id) { if(confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
+    function clearEverything() { if(confirm('تصفير كل البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
+
+    window.onload = renderCourses;
+</script>
 </body>
 </html>
