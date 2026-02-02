@@ -25,7 +25,7 @@
             min-height: 100vh;
         }
 
-        /* نافذة التعليمات (Modal) - تصحيح التوازن والمحاذاة */
+        /* تنسيق بوكس التعليمات الموزون */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -65,7 +65,7 @@
             border-radius: 12px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: bold;
         }
 
-        /* شريط التثبيت المصغر والأنيق */
+        /* شريط التثبيت العلوي المصغر */
         .install-banner {
             background: #ffffff; border: 1px solid #e1e9e7; padding: 10px 15px;
             border-radius: 16px; margin-bottom: 20px; display: flex; align-items: center;
@@ -90,6 +90,7 @@
         .course-card { background: white; border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.06); border: 1px solid #e1e9e7; position: relative; }
         .delete-course { position: absolute; top: 18px; left: 18px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; padding: 5px; outline: none; background: transparent; }
+        
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 0.8rem; color: #444; margin-bottom: 6px; font-weight: 700; background: #f8faf9; padding: 4px 10px; border-right: 3px solid var(--primary); }
         
@@ -123,11 +124,14 @@
         </div>
         <div class="guide-item">
             <b>🍏 لمستخدمي iPhone (Safari)</b>
-            اضغط على زر المشاركة ⎋ ثم اختار <br> "إضافة إلى الشاشة الرئيسية"
+            اضغط على أيقونة المشاركة ⬆️ <br>
+            (المربع الذي به سهم للأعلى) <br>
+            ثم اختار <b>"إضافة إلى الشاشة الرئيسية"</b>
         </div>
         <div class="guide-item">
             <b>🤖 لمستخدمي Android (Chrome)</b>
-            اضغط على النقاط الثلاث ⋮ ثم اختار <br> "إضافة إلى الشاشة الرئيسية"
+            اضغط على النقاط الثلاث ⋮ <br>
+            ثم اختار <b>"إضافة إلى الشاشة الرئيسية"</b>
         </div>
         <button class="close-modal" onclick="toggleModal(false)">فهمت ذلك</button>
     </div>
@@ -171,7 +175,6 @@
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
 
-    // وظيفة التحكم في ظهور بوكس التعليمات
     function toggleModal(show) {
         document.getElementById('guideModal').style.display = show ? 'flex' : 'none';
     }
