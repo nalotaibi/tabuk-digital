@@ -27,19 +27,16 @@
 
         /* الطبقة الشفافة - التعديل الجذري للتوسيط */
         .modal-overlay {
-            display: none; /* يتم تبديله بـ flex بواسطة JS */
+            display: none; 
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
             z-index: 9999;
-            
-            /* أسرار التوسيط */
-            justify-content: center; /* سنتر أفقي */
-            align-items: center;     /* سنتر عمودي */
+            justify-content: center; 
+            align-items: center;     
         }
 
-        /* البوكس الأبيض - المحاذاة الداخلية */
         .modal-content {
             background: white;
             padding: 25px 20px;
@@ -50,7 +47,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             text-align: center;
             box-sizing: border-box;
-            margin: 0; /* تم إلغاء الـ auto لترك المهمة للـ Flex */
+            margin: 0; 
         }
 
         .modal-header { 
@@ -70,7 +67,6 @@
             border-radius: 12px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: bold;
         }
 
-        /* شريط التثبيت العلوي */
         .install-banner {
             background: #ffffff; border: 1px solid #e1e9e7; padding: 10px 15px;
             border-radius: 16px; margin-bottom: 20px; display: flex; align-items: center;
@@ -104,6 +100,9 @@
         .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
         .flex-inputs > div { flex: 1; }
         .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; text-align: center; }
+
+        /* أيقونة التعجب الجديدة */
+        .hint-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: #e2e8f0; color: #4a5568; border-radius: 50%; font-size: 0.65rem; margin-right: 4px; cursor: pointer; font-weight: bold; vertical-align: middle; }
 
         .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #cbd5e0; color: white; border-radius: 50%; font-size: 0.75rem; margin-right: 5px; cursor: pointer; font-weight: bold; vertical-align: middle; }
 
@@ -180,7 +179,6 @@
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
 
-    // دالة فتح المودال مع تفعيل Flex لضمان التوسط
     function toggleModal(show) {
         const modal = document.getElementById('guideModal');
         modal.style.display = show ? 'flex' : 'none';
@@ -261,8 +259,20 @@
                 <div class="input-group">
                     <label> عدد مرات الغياب </label>
                     <div class="flex-inputs">
-                        ${showAbsent2 ? `<div>${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعتين)</span>'}<input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
-                        ${showAbsent1 ? `<div>${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعة)</span>'}<input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
+                        ${showAbsent2 ? `<div>
+                            <span class="input-sub-label">
+                                <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعتين:\\nيُقصد بها المحاضرات الطويلة التي تُحسب بـساعتين غياب عند التغيب عنها مرة واحدة.')">?</span>
+                                (محاضرة فئة ساعتين)
+                            </span>
+                            <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
+                        </div>` : ''}
+                        ${showAbsent1 ? `<div>
+                            <span class="input-sub-label">
+                                <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعة:\\nيُقصد بها المحاضرات القصيرة التي تُحسب بـساعة غياب واحدة فقط.')">?</span>
+                                (محاضرة فئة ساعة)
+                            </span>
+                            <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
+                        </div>` : ''}
                     </div>
                 </div>
                 <div class="result-area ${statusClass}">
