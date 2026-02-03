@@ -630,7 +630,7 @@
                     <label>عدد الساعات الأسبوعية للمقرر</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                        ${[1,2,3,4,5,6].map(h => {
-  const label = (h === 1) ? "ساعة" : (h === 2) ? "ساعتين" : "ساعات";
+  const label = (h <= 2) ? "ساعة" : "ساعات";
   return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
 }).join('')}
                     </select>
