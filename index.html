@@ -615,7 +615,10 @@ detail = getLectureText(count);
                     } else if (lec1 > 0) {
                         detail = `<b>1</b> محاضرة (ساعة)`;
                     } else {
-                        detail = "أقل من ساعة";
+                        advice = `
+<div class="advice-box" style="color:var(--danger); font-weight:900;">
+⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
+</div>`;
                     }
                 }
                 if (remHours <= 0) {
