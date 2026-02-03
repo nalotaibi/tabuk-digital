@@ -563,34 +563,7 @@ function getLectureText(n) {
         `;
         openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
     }
-     function hourWord(n){
-  const v = Math.abs(Number(n));
-  if (!Number.isFinite(v)) return "ساعة";
-  if (v % 1 !== 0) return "ساعة";         // كسور
-  if (v === 1 || v === 2) return "ساعة";
-  if (v >= 3 && v <= 10) return "ساعات";
-  return "ساعة";                          // 11+
-}
 
-function lectureWord(n){
-  const v = Math.abs(parseInt(n, 10)) || 0;
-  if (v === 1 || v === 2) return "محاضرة";
-  if (v >= 3 && v <= 10) return "محاضرات";
-  return "محاضرة";                        // 0 أو 11+
-}
-
-function lecturePhrase(n){
-  const v = Math.abs(parseInt(n, 10)) || 0;
-  return `${v} ${lectureWord(v)}`;
-}
-
-    function minAbsUnit(weeklyH){
-  return (weeklyH === 1 || weeklyH === 3 || weeklyH === 5) ? 1 : 2;
-}
-
-
-
-    
     function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
@@ -600,18 +573,6 @@ function lecturePhrase(n){
             const totalHours = weeklyH * 16;
             const limit = totalHours * 0.20;
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
-            const EPS = 1e-9;
-            const isDenied = currentAbsent + EPS >= limit;
-
-if (isDenied) {
-    statusClass = 'danger-bg';
-    statusColor = 'var(--danger)';
-    msg = '🔴 حالة حرمان';
-    infoIconClass = 'danger';
-} else if (percent >= 15) {
-    ...
-}
-
             const percent = (currentAbsent / totalHours) * 100 || 0;
             const remaining = limit - currentAbsent;
 
@@ -636,65 +597,45 @@ if (isDenied) {
             }
 
             let advice = "";
-
-if (currentAbsent < limit) {
-
-  const remainingRaw = limit - currentAbsent;        // مثل 1.2
-  const minUnit = minAbsUnit(weeklyH);               // 1 أو 2
-
-  // ✅ إذا المتبقي أقل من أقل وحدة غياب -> لا يوجد رصيد عمليًا
-  if (remainingRaw < minUnit) {
-    advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
-  } else {
-
-    // نعرض المتبقي كساعات كاملة (لأن رايات ما يحسب نصف محاضرة)
-    const remHours = Math.floor(remainingRaw);
-    const hourLabel = hourWord(remHours);
-
-    let detail = "";
-
-    // ✅ مقررات 1 ساعة: كل محاضرة = ساعة
-    if (weeklyH === 1) {
-      const count = Math.floor(remHours / 1);
-      detail = `${lecturePhrase(count)} (ساعة)`;
-    }
-
-    // ✅ مقررات 2/4/6 ساعات: غالباً كل غياب يُسجل كساعتين
-    else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-      const count = Math.floor(remHours / 2);
-      detail = `${lecturePhrase(count)} (ساعتين)`;
-    }
-
-    // ✅ مقررات 3 أو 5: فيها (ساعتين) + (ساعة)
-    else if (weeklyH === 3 || weeklyH === 5) {
-      const lec2 = Math.floor(remHours / 2);
-      const lec1 = remHours % 2;
-
-      const parts = [];
-      if (lec2 > 0) parts.push(`${lecturePhrase(lec2)} (ساعتين)`);
-      if (lec1 > 0) parts.push(`${lecturePhrase(lec1)} (ساعة)`);
-
-      detail = parts.join(" و ");
-    }
-
-    // احتياط لأي رقم آخر
-    else {
-      const lec2 = Math.floor(remHours / 2);
-      const lec1 = remHours % 2;
-      const parts = [];
-      if (lec2 > 0) parts.push(`${lecturePhrase(lec2)} (ساعتين)`);
-      if (lec1 > 0) parts.push(`${lecturePhrase(lec1)} (ساعة)`);
-      detail = parts.join(" و ");
-    }
-
-    advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourLabel}: ${detail}</div>`;
-  }
-
+            if (currentAbsent <= limit) {
+                const remHours = Math.floor(remaining);
+                const hourLabel = getHourLabel(remHours);
+                let detail = "";
+                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
+                    const unit = (weeklyH === 1) ? 1 : 2;
+const count = Math.floor(remHours / unit);
+detail = getLectureText(count);
+                } else {
+                    const lec2 = Math.floor(remHours / 2);
+                    const lec1 = remHours % 2;
+                    if (lec2 > 0 && lec1 > 0) {
+                        let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
+                    } else if (lec2 > 0) {
+                        let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w} (ساعتين)`;
+                    } else if (lec1 > 0) {
+                        detail = `<b>1</b> محاضرة (ساعة)`;
+                    } else {
+                        advice = `
+<div class="advice-box" style="color:var(--danger); font-weight:900;">
+⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
+</div>`;
+                    }
+                }
+                if (remHours <= 0) {
+  advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
 } else {
-    advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب (حالة حرمان)</div>`;
+  // هنا detail عندك غالباً يحتوي "محاضرة/محاضرتين/محاضرات" مع رقم
+  // بنحوّد الجملة بحيث ما يصير: 2 محاضرتين
+
+  // نحاول استخراج رقم المحاضرات من detail إذا كان detail يبدأ برقم (اختياري)
+  // الأفضل: نخلي detail نص بدون رقم، أو نعيد بناءه من remHours حسب نظامك.
+  advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourLabel}: ${detail}</div>`;
 }
-
-
+            } else {
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
+            }
 
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2);
