@@ -600,6 +600,18 @@ function lecturePhrase(n){
             const totalHours = weeklyH * 16;
             const limit = totalHours * 0.20;
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
+            const EPS = 1e-9;
+            const isDenied = currentAbsent + EPS >= limit;
+
+if (isDenied) {
+    statusClass = 'danger-bg';
+    statusColor = 'var(--danger)';
+    msg = '🔴 حالة حرمان';
+    infoIconClass = 'danger';
+} else if (percent >= 15) {
+    ...
+}
+
             const percent = (currentAbsent / totalHours) * 100 || 0;
             const remaining = limit - currentAbsent;
 
@@ -625,7 +637,7 @@ function lecturePhrase(n){
 
             let advice = "";
 
-if (currentAbsent <= limit) {
+if (currentAbsent < limit) {
 
   const remainingRaw = limit - currentAbsent;        // مثل 1.2
   const minUnit = minAbsUnit(weeklyH);               // 1 أو 2
@@ -679,8 +691,9 @@ if (currentAbsent <= limit) {
   }
 
 } else {
-  advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
+    advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب (حالة حرمان)</div>`;
 }
+
 
 
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
