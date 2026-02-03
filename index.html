@@ -575,17 +575,15 @@
         });
     }
 
-    function openLimitInfo(weeklyH, limit) {
-        // المعادلة فقط (بدون "يعادل")
-        const formula = `( ${weeklyH} ساعات أسبوعياً × 16 أسبوع ) × 20% = ${Number(limit).toFixed(1)} ساعة`;
+    function openLimitInfo() {
+    openInfoModal({
+        title: 'طريقة الحساب',
+        text: '📘 طريقة حساب ساعات الحرمان لهذا المقرر:',
+        formula: '20% × (الساعات الأسبوعية × 16 أسبوع) = حدّ الحرمان بالساعات',
+        badge: 'i'
+    });
+}
 
-        openInfoModal({
-            title: 'طريقة الحساب',
-            text: '📘 طريقة حساب ساعات الحرمان لهذا المقرر:',
-            formula: formula,
-            badge: 'i'
-        });
-    }
 
     function renderCourses() {
         const list = document.getElementById('coursesList');
@@ -715,7 +713,7 @@
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
                         <span>
                             حد الحرمان: ${limit.toFixed(1)} ساعة
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo()">i</span>
                         </span>
                     </div>
 
