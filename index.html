@@ -598,10 +598,11 @@
                 const hourLabel = hourWord(remHours);
                 let detail = "";
                 
-                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
+                // ✅ تم تعديل الشرط هنا ليشمل 6 ساعات ويعاملها كفئة (ساعتين) فقط
+                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
-                    detail = getLectureText(count);
+                    detail = getLectureText(count) + (unit === 2 ? " (ساعتين)" : " (ساعة)");
                 } else {
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
