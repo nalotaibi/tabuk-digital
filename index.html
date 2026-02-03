@@ -502,6 +502,17 @@
         courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
         renderCourses();
     }
+    
+    function getHourLabel(n) {
+  return (n === 1 || n === 2) ? "ساعة" : "ساعات";
+}
+
+function getLectureText(n) {
+  if (n === 0) return "";
+  if (n === 1) return "محاضرة واحدة";
+  if (n === 2) return "محاضرتين";
+  return `${n} محاضرات`;
+}
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
@@ -586,6 +597,7 @@
             let advice = "";
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining);
+                const hourLabel = getHourLabel(remHours);
                 let detail = "";
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
@@ -607,7 +619,16 @@
                         detail = "أقل من ساعة";
                     }
                 }
-                advice = `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة: ${detail}</div>`;
+                if (remHours <= 0) {
+  advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
+} else {
+  // هنا detail عندك غالباً يحتوي "محاضرة/محاضرتين/محاضرات" مع رقم
+  // بنحوّد الجملة بحيث ما يصير: 2 محاضرتين
+
+  // نحاول استخراج رقم المحاضرات من detail إذا كان detail يبدأ برقم (اختياري)
+  // الأفضل: نخلي detail نص بدون رقم، أو نعيد بناءه من remHours حسب نظامك.
+  advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourLabel}: ${detail}</div>`;
+}
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
             }
