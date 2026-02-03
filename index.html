@@ -598,14 +598,13 @@
                 const hourLabel = hourWord(remHours);
                 let detail = "";
                 
-                // ✅ الـ 5 ساعات عادت للنظام المختلط (else)
-                // ✅ الـ 6 ساعات بقيت في نظام الساعتين (الشرط العلوي)
+                // ✅ تعديل: الـ 6 ساعات هنا تعامل كفئة (ساعتين) فقط مثل 2 و 4
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
                     detail = getLectureText(count) + (unit === 2 ? " (ساعتين)" : " (ساعة)");
                 } else {
-                    // معاملة خاصة لـ 3 و 5 ساعات (النظام المختلط)
+                    // ✅ الـ 3 و 5 ساعات تبقى كـ نظام مختلط (ساعتين وساعة)
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
                     if (lec2 > 0 && lec1 > 0) {
@@ -625,8 +624,6 @@
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
             }
-
-            // باقي كود بناء الكارت HTML يبقى كما هو دون تغيير...
 
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2);
