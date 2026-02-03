@@ -598,13 +598,13 @@
                 const hourLabel = hourWord(remHours);
                 let detail = "";
                 
-                // ✅ تعديل: الـ 6 ساعات هنا تعامل كفئة (ساعتين) فقط مثل 2 و 4
+                // ✅ 6 ساعات تعامل معاملة الساعتين فقط (مثل 2 و 4)
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
                     detail = getLectureText(count) + (unit === 2 ? " (ساعتين)" : " (ساعة)");
                 } else {
-                    // ✅ الـ 3 و 5 ساعات تبقى كـ نظام مختلط (ساعتين وساعة)
+                    // ✅ 3 و 5 ساعات تعامل معاملة النظام المختلط
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
                     if (lec2 > 0 && lec1 > 0) {
@@ -625,8 +625,9 @@
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
             }
 
-            const isComplexType = (weeklyH === 3 || weeklyH === 5);
-            const showAbsent2 = (weeklyH >= 2);
+            // ✅ التعديل لضمان ظهور الخانات الصحيحة لـ 5 ساعات
+            const isComplexType = (weeklyH === 3 || weeklyH === 5); 
+            const showAbsent2 = (weeklyH >= 2); 
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
             const card = document.createElement('div');
