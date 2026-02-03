@@ -23,29 +23,27 @@
 
             --bg-gradient: linear-gradient(135deg, #e6f4f8 0%, #ffffff 100%);
 
-            /* Info modal */
-            /*  حوار فاتح مريح للعين */
---info-modal-bg: #ffffff;
---info-modal-text: #1f2937;
---info-modal-accent: #0EA5E9;
-
+            /* Info modal (فاتح) */
+            --info-modal-bg: #ffffff;
+            --info-modal-text: #1f2937;
+            --info-modal-accent: #0EA5E9;
         }
+
         /* ✅ تثبيت اتجاه الأرقام داخل النص العربي */
-.num{
-    direction: ltr;
-    unicode-bidi: isolate;
-    display: inline-block;
-    font-weight: 800;
-}
+        .num{
+            direction: ltr;
+            unicode-bidi: isolate;
+            display: inline-block;
+            font-weight: 800;
+        }
 
-/* ✅ سطر المعادلة نفسه RTL لكن الأرقام LTR */
-.formula-line{
-    direction: rtl;
-    unicode-bidi: isolate-override;
-    text-align: center;
-    white-space: nowrap;
-}
-
+        /* ✅ سطر المعادلة نفسه RTL لكن الأرقام LTR */
+        .formula-line{
+            direction: rtl;
+            unicode-bidi: isolate-override;
+            text-align: center;
+            white-space: nowrap;
+        }
 
         body {
             margin: 0;
@@ -54,75 +52,6 @@
             padding: 20px 10px;
             direction: rtl;
             min-height: 100vh;
-        }
-
-        /* ===== Guide Modal ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px 20px;
-            border-radius: 24px;
-            width: 85%;
-            max-width: 340px;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            box-sizing: border-box;
-            margin: 0;
-        }
-
-        .modal-header {
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .guide-item {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #333;
-            text-align: center;
-            width: 100%;
-            display: block;
-        }
-
-        .guide-item b {
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 1rem;
-            width: 100%;
-        }
-
-        .close-modal {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            width: 100%;
-            margin-top: 10px;
-            cursor: pointer;
-            font-weight: bold;
         }
 
         .install-banner {
@@ -154,7 +83,6 @@
         .header-section { text-align: center; margin-bottom: 20px; }
         .college-logo img { width: 200px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
 
-        /* ✅ العنوان يرجع للون السابق */
         .header-text h1 {
             margin: 0;
             font-size: 1.6rem;
@@ -265,6 +193,7 @@
         input:focus { border-color: var(--secondary); background: #f8fdff; }
         .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
         .flex-inputs > div { flex: 1; }
+
         .input-sub-label {
             font-size: 0.7rem;
             color: #666;
@@ -274,7 +203,6 @@
             text-align: center;
         }
 
-        /* ✅ علامة الاستفهام (معلومات) */
         .hint-icon {
             display: inline-flex;
             align-items: center;
@@ -294,7 +222,6 @@
         }
         .hint-icon:active { transform: translateY(1px) scale(0.98); }
 
-        /* ===== Info icon (حد الحرمان) ===== */
         .info-icon {
             display: inline-flex;
             align-items: center;
@@ -362,9 +289,9 @@
             background: var(--info-modal-bg);
             color: var(--info-modal-text);
             border-radius: 20px;
-            box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.25);
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(15, 23, 42, 0.08);
         }
 
         .info-modal-header{
@@ -372,7 +299,7 @@
             align-items:center;
             justify-content:space-between;
             padding: 14px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
         }
 
         .info-modal-title{
@@ -405,7 +332,7 @@
             border-radius: 10px;
         }
         .info-close:hover{
-            background: rgba(255,255,255,0.06);
+            background: rgba(2, 132, 199, 0.08);
             color: var(--info-modal-text);
         }
 
@@ -413,23 +340,6 @@
             padding: 14px 16px 6px 16px;
             font-size: 0.92rem;
             line-height: 1.7;
-        }
-
-        /* المعادلة */
-        .info-formula{
-            margin-top: 10px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 10px 12px;
-            border-radius: 14px;
-            color: var(--info-modal-text);
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 0.86rem;
-            direction: rtl;
-            unicode-bidi: isolate-override;
-            text-align: center;
-            white-space: nowrap;
-            overflow-x: auto;
         }
 
         .info-modal-footer{
@@ -445,7 +355,7 @@
             padding: 12px 14px;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
         }
         .info-ok:active{ transform: translateY(1px); }
     </style>
@@ -453,8 +363,7 @@
 
 <body>
 
-<!-- Guide Modal -->
-<!-- Guide Modal (بنفس تصميم Info Modal) -->
+<!-- ✅ Guide Modal (مصحح: إغلاق divs + إضافة Android + محاذاة وسط + خط أصغر) -->
 <div id="guideModal" class="info-overlay" onclick="toggleModal(false)">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
@@ -465,24 +374,33 @@
             <button class="info-close" onclick="toggleModal(false)">✕</button>
         </div>
 
-        <div class="info-modal-body">
+        <div class="info-modal-body" style="text-align:center;">
+            <div style="font-weight:900; color:var(--primary); margin-bottom:8px;">
+                🍏 لمستخدمي iPhone (Safari)
+            </div>
+            <div style="font-size:0.82rem; line-height:1.7;">
+                اضغط على أيقونة المشاركة ⬆️<br>
+                ثم اختر<br>
+                <b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
+            </div>
 
-            <b>🍏 لمستخدمي iPhone (Safari)</b><br>
+            <hr style="border:none; border-top:1px solid rgba(15,23,42,0.10); margin:14px 0;">
 
-<div style="font-size:0.85rem; line-height:1.6; margin-top:6px; text-align:center;">
-اضغط على أيقونة المشاركة ⬆️<br>
-ثم اختر<br>
-<b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
-</div>
-
-
+            <div style="font-weight:900; color:var(--primary); margin-bottom:8px;">
+                🤖 لمستخدمي Android (Chrome)
+            </div>
+            <div style="font-size:0.82rem; line-height:1.7;">
+                اضغط على النقاط الثلاث ⋮<br>
+                ثم اختر<br>
+                <b style="color:var(--info-modal-accent)">إضافة إلى الشاشة الرئيسية</b>
+            </div>
+        </div> <!-- ✅ إغلاق body -->
 
         <div class="info-modal-footer">
             <button class="info-ok" onclick="toggleModal(false)">فهمت</button>
         </div>
     </div>
 </div>
-
 
 <!-- ✅ Info Modal موحّد -->
 <div id="infoOverlay" class="info-overlay" onclick="closeInfoModal()">
@@ -534,11 +452,6 @@
             <p style="margin:2px 0; color:#555; font-size:0.8rem;">الكلية التقنية الرقمية للبنات بتبوك</p>
             <p style="margin:2px 0; color:#555; font-size:0.8rem;">1447هـ | 2026م</p>
             <a href="mailto:norah.a@tvtc.gov.sa" style="text-decoration:none; color:#555; font-size:0.8rem; dir:ltr; margin-top:5px;">📧 norah.a@tvtc.gov.sa</a>
-            <div style="margin-top:10px;">
-                <a href="https://www.freecounterstat.com" target="_blank" rel="noreferrer">
-                    <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0" title="عداد الزيارات" alt="counter">
-                </a>
-            </div>
         </div>
     </footer>
 </div>
@@ -562,23 +475,19 @@
         renderCourses();
     }
 
-    /* ===== Info Modal Functions (موحّد) ===== */
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
         document.getElementById('infoText').innerHTML = text;
-
-        // ✅ تغيير رمز الشارة حسب نوع الرسالة
         document.getElementById('infoBadge').textContent = badge;
 
         const f = document.getElementById('infoFormula');
         if (formula && formula.trim() !== '') {
             f.style.display = 'block';
-            f.textContent = formula; // المعادلة فقط
+            f.textContent = formula;
         } else {
             f.style.display = 'none';
             f.textContent = '';
         }
-
         document.getElementById('infoOverlay').style.display = 'flex';
     }
 
@@ -586,7 +495,6 @@
         document.getElementById('infoOverlay').style.display = 'none';
     }
 
-    /* ✅ رسائل الاستفهام (بنفس تصميم حد الحرمان) */
     function openHintTwoHours() {
         openInfoModal({
             title: 'محاضرة فئة ساعتين',
@@ -604,26 +512,16 @@
     }
 
     function openLimitInfo(weeklyH, limit) {
-    const fixed = Number(limit).toFixed(1);
-
-    const text = `
-        <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
-        <div class="formula-line" style="margin-top:10px;">
-            ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع ) × <span class="num">20%</span>
-            = <span class="num">${fixed}</span> ساعة
-        </div>
-    `;
-
-    openInfoModal({
-        title: 'طريقة الحساب',
-        text: text,
-        badge: 'i',
-        formula: ''   // تأكيد إخفاء خانة formula القديمة
-    });
-}
-
-
-
+        const fixed = Number(limit).toFixed(1);
+        const text = `
+            <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
+            <div class="formula-line" style="margin-top:10px;">
+                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع ) × <span class="num">20%</span>
+                = <span class="num">${fixed}</span> ساعة
+            </div>
+        `;
+        openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
+    }
 
     function renderCourses() {
         const list = document.getElementById('coursesList');
@@ -661,7 +559,6 @@
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining);
                 let detail = "";
-
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
@@ -682,8 +579,7 @@
                         detail = "أقل من ساعة";
                     }
                 }
-
-                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة: ${detail}</div>`;
+                advice = `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة: ${detail}</div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
             }
@@ -754,7 +650,6 @@
                         <span>
                             حد الحرمان: ${limit.toFixed(1)} ساعة
                             <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
-
                         </span>
                     </div>
 
