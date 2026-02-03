@@ -5,6 +5,7 @@
     <link rel="icon" href="1024.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
     <title>حاسبة الغياب</title>
 
     <style>
@@ -26,13 +27,14 @@
         }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: var(--bg-gradient);
-            padding: 20px 10px;
-            direction: rtl;
-            min-height: 100vh;
-        }
+    margin: 0;
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg-gradient);
+    padding: 20px 10px;
+    direction: rtl;
+    min-height: 100vh;
+}
+
 
         /* ===== Guide Modal ===== */
         .modal-overlay {
@@ -131,7 +133,12 @@
         .app-container { max-width: 450px; margin: 0 auto; }
         .header-section { text-align: center; margin-bottom: 20px; }
         .college-logo img { width: 200px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
-        .header-text h1 { margin: 0; font-size: 1.6rem; color: var(--primary); font-weight: 800; }
+        .header-text h1 {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
         .system-badge { display: inline-block; margin-top: 8px; padding: 4px 12px; background: #e0f2f1; color: #00796b; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
 
         .action-bars { display: flex; gap: 10px; margin: 20px 0; }
