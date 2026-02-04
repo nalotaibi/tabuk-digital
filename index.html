@@ -666,26 +666,17 @@
                 const remInt = Math.max(0, Math.floor(remainingRaw)); // ساعات صحيحة للعرض
 
                 // ✅ التفاصيل الآن = عدد المحاضرات فقط (بدون ساعة/ساعتين)
-                let detail = '';
+                // ✅ التفاصيل الآن = عدد المحاضرات فقط (بدون ساعة/ساعتين)
+let detail = '';
 
-                if (weeklyH === 1) {
-                    // كل ساعة = محاضرة
-                    detail = getLectureText(remInt);
-
-                } else if (weeklyH === 3 || weeklyH === 5) {
-    // ✅ نحسب فقط المحاضرات الآمنة قبل الحرمان
-    // كل محاضرة = ساعتين، وأي ساعة مفردة لا تُحتسب كمحاضرة كاملة
+if (weeklyH === 1) {
+    // 1 ساعة: كل ساعة = محاضرة
+    detail = getLectureText(remInt);
+} else {
+    // 2 / 3 / 4 / 5 / 6 : كل محاضرة = ساعتين (محاضرات آمنة قبل الحرمان)
     const safeLectures = Math.floor(remInt / 2);
     detail = getLectureText(safeLectures);
-} else if (weeklyH === 3 || weeklyH === 5) {
-                    // قد تكون محاضرات 1 ساعة أو 2 ساعة -> نعرض نطاق محاضرات بدون ذكر النوع
-                    const minLectures = Math.floor(remInt / 2);
-                    const maxLectures = remInt;
-                    detail = lectureRangeText(minLectures, maxLectures);
-
-                } else {
-                    detail = '';
-                }
+}
 
                 // ===== رسائل المتبقي / التحذير =====
                 if (remainingRaw <= EPS) {
