@@ -125,6 +125,16 @@
             font-weight: bold;
         }
 
+         .system-16 {
+         background: #e0f2fe;
+         color: #0369a1;
+       }
+
+       .system-15 {
+       background: #ecfdf5;
+       color: #047857;
+}
+
         .action-bars { display: flex; gap: 10px; margin: 20px 0; }
         .add-btn {
             flex: 2;
@@ -556,10 +566,16 @@
     }
 
     function changeWeeks(w) {
-        selectedWeeks = parseInt(w) || 16; // ✅ حماية من NaN
-        localStorage.setItem('selectedWeeks', selectedWeeks);
-        renderCourses();
-    }
+    selectedWeeks = parseInt(w);
+    localStorage.setItem('selectedWeeks', selectedWeeks);
+
+    const sel = document.getElementById('weeksSelect');
+    sel.classList.remove('system-15', 'system-16');
+    sel.classList.add(selectedWeeks === 15 ? 'system-15' : 'system-16');
+
+    renderCourses();
+}
+
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         const t = $('infoTitle'), tx = $('infoText'), b = $('infoBadge'), f = $('infoFormula'), ov = $('infoOverlay');
@@ -829,12 +845,10 @@ if (currentAbsent + EPS >= limit) {
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
     window.onload = function () {
-        const sel = $('weeksSelect');
-        if (sel) sel.value = selectedWeeks;
-
-        // ✅ لو weeksSelect غير موجود، لا نوقف التطبيق: فقط نرسم
-        renderCourses();
-    };
+    const sel = document.getElementById('weeksSelect');
+    if (sel) sel.value = selectedWeeks;
+    changeWeeks(selectedWeeks);
+};
 </script>
 </body>
 </html>
