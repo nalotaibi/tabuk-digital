@@ -19,7 +19,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>حاسبة الغياب</title>
 
-    <!-- ✅ خط عربي احترافي (اختياري) -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -41,7 +40,7 @@
             --info-modal-accent: #0EA5E9;
         }
 
-        /* ✅ تثبيت اتجاه الأرقام داخل النص العربي */
+        /*  تثبيت اتجاه الأرقام داخل النص العربي */
         .num{
             direction: ltr;
             unicode-bidi: isolate;
@@ -466,7 +465,16 @@
         <div class="college-logo"><img src="TVTC_identity.png" alt="Logo"></div>
         <div class="header-text">
             <h1>حاسبة الغياب الذكية</h1>
-            <span class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
+            <div style="margin-top:10px;">
+    <select id="weeksSelect" onchange="changeWeeks(this.value)"
+        style="padding:6px 12px;border-radius:12px;border:1px solid #cfe3ea;font-weight:800;color:#006699;">
+        <option value="16" selected>نظام 16 أسبوعًا</option>
+        <option value="15">نظام 15 أسبوعًا</option>
+    </select>
+
+    <span id="systemBadge" class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
+</div>
+
         </div>
     </header>
 
@@ -500,8 +508,10 @@
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
+    llet selectedWeeks = parseInt(localStorage.getItem('selectedWeeks')) || 16;
 
-    // ✅ تحديث دالة صيغة كلمة (ساعة/ساعات)
+
+    //  تحديث دالة صيغة كلمة (ساعة/ساعات)
     function hourWord(n) {
         let v = Math.abs(parseFloat(n));
         if (v === 0) return "ساعة";
@@ -546,6 +556,19 @@
         renderCourses();
     }
 
+    function changeWeeks(w) {
+    selectedWeeks = parseInt(w);
+
+    // حفظ الاختيار
+    localStorage.setItem('selectedWeeks', selectedWeeks);
+
+    document.getElementById('systemBadge').textContent =
+        `نظام ${selectedWeeks} أسبوعًا (20% حرمان)`;
+
+    renderCourses();
+}
+
+
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
         document.getElementById('infoText').innerHTML = text;
@@ -586,7 +609,7 @@
         const text = `
             <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
             <div class="formula-line" style="margin-top:10px;">
-                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع ) × <span class="num">20%</span>
+                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">${selectedWeeks}</span> أسبوع ) × <span class="num">20%</span>
                 = <span class="num">${fixed}</span> ساعة
             </div>
         `;
@@ -608,7 +631,7 @@
 
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const totalHours = weeklyH * 16;
+            const totalHours = weeklyH * selectedWeeks;
             const limit = totalHours * 0.20;
 
             const a1 = parseFloat(course.absent1) || 0;     // (ساعة)
@@ -801,7 +824,12 @@ if (currentAbsent + EPS >= limit) {
     function deleteCourse(id) { if (confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
-    window.onload = renderCourses;
+    wwindow.onload = function () {
+    const sel = document.getElementById('weeksSelect');
+    if (sel) sel.value = selectedWeeks;
+    changeWeeks(selectedWeeks);
+};
+
 </script>
 </body>
 </html>
