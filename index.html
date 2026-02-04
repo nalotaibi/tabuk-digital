@@ -663,7 +663,7 @@ if (currentAbsent + EPS >= limit) {
               </div>`;
 } else {
     const remainingSafeRaw = (limit - EPS) - currentAbsent;
-    const enableFinalWarning = !(selectedWeeks === 16 && (weeklyH === 2 || weeklyH === 4 || weeklyH === 6));
+    
 
     // nextStep حسب نوع المقرر
     let nextStep = 1;
@@ -673,45 +673,42 @@ if (currentAbsent + EPS >= limit) {
 
     //  إذا وصلنا لمرحلة: أي غياب قادم = حرمان
     //  هنا نحذف سطر "متبقي لك 0/1" نهائيًا
-    if ((remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) && enableFinalWarning) {
-    //  يظهر التحذير النهائي فقط (بدون متبقي)
+    // ✅ إذا وصلنا لمرحلة: أي غياب قادم = حرمان
+// ✅ نعرض التحذير فقط (بدون "متبقي لك ...") لجميع الساعات بما فيها 2/4/6 وفي النظامين
+if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
     advice = `
         <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
             ⚠️ أي غياب قادم سيؤدي إلى الحرمان
         </div>
     `;
-    } else if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-    //  إذا التحذير غير مفعّل (مثلاً 16 أسبوع + 2/4/6) نخفي صندوق المتبقي بالكامل
-    advice = '';
-    } else {
-        const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+} else {
+    const remInt = Math.max(0, Math.floor(remainingSafeRaw));
 
-        // بناء التفاصيل (محاضرات)
-        let detail = '';
-        if (weeklyH === 1) {
-            detail = getLectureText(remInt);
-        } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-            detail = getLectureText(Math.floor(remInt / 2));
-        } else if (weeklyH === 3) {
-            const twoH = Math.min(selectedWeeks === 15 ? 4 : 4, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = oneH > 0
-                ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
-                : `${twoH} محاضرات (ساعتين)`;
-        } else if (weeklyH === 5) {
-            const twoH = Math.min(7, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = oneH > 0
-                ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
-                : `${twoH} محاضرات (ساعتين)`;
-        }
-
-        advice = `
-            <div class="advice-box">
-                متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-            </div>
-        `;
+    // بناء التفاصيل (محاضرات)
+    let detail = '';
+    if (weeklyH === 1) {
+        detail = getLectureText(remInt);
+    } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+        detail = getLectureText(Math.floor(remInt / 2));
+    } else if (weeklyH === 3) {
+        const twoH = Math.min(4, Math.floor(remInt / 2));
+        const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+        detail = oneH > 0
+            ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
+            : `${twoH} محاضرات (ساعتين)`;
+    } else if (weeklyH === 5) {
+        const twoH = Math.min(7, Math.floor(remInt / 2));
+        const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+        detail = oneH > 0
+            ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
+            : `${twoH} محاضرات (ساعتين)`;
     }
+
+    advice = `
+        <div class="advice-box">
+            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+        </div>
+    `;
 }
 
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
