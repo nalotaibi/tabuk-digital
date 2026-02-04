@@ -596,23 +596,34 @@
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining);
                 const hourLabel = hourWord(remHours);
-                let detail = "";
-                
-                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
-                    const unit = (weeklyH === 1) ? 1 : 2;
-                    const count = Math.floor(remHours / unit);
-                    detail = getLectureText(count);
-                } else {
-                    const lec2 = Math.floor(remHours / 2);
-                    const lec1 = remHours % 2;
-                    if (lec2 > 0 && lec1 > 0) {
-                        detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
-                    } else if (lec2 > 0) {
-                        detail = `${getLectureText(lec2)} (ساعتين)`;
-                    } else if (lec1 > 0) {
-                        detail = `${getLectureText(lec1)} (ساعة)`;
-                    }
-                }
+                // ===== توزيع المتبقي حسب نوع المقرر =====
+
+// 6 ساعات → مثل 1 ساعة (كلها محاضرات ساعة)
+if (weeklyH === 6) {
+    detail = getLectureText(remHours);
+
+// 5 ساعات → مثل 3 ساعات (ساعتين + ساعة)
+} else if (weeklyH === 5 || weeklyH === 3) {
+    const lec2 = Math.floor(remHours / 2);
+    const lec1 = remHours % 2;
+
+    if (lec2 > 0 && lec1 > 0) {
+        detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
+    } else if (lec2 > 0) {
+        detail = `${getLectureText(lec2)} (ساعتين)`;
+    } else if (lec1 > 0) {
+        detail = `${getLectureText(lec1)} (ساعة)`;
+    }
+
+// 1 ساعة
+} else if (weeklyH === 1) {
+    detail = getLectureText(remHours);
+
+// 2 أو 4 ساعات (محاضرات ساعتين فقط)
+} else if (weeklyH === 2 || weeklyH === 4) {
+    const count = Math.floor(remHours / 2);
+    detail = `${getLectureText(count)} (ساعتين)`;
+}
 
                 if (remHours <= 0) {
                     advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">⚠️ أي غياب قادم سيؤدي إلى الحرمان</div>`;
