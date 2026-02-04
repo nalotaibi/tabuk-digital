@@ -34,13 +34,12 @@
 
             --bg-gradient: linear-gradient(135deg, #e6f4f8 0%, #ffffff 100%);
 
-            /* Info modal (فاتح) */
+       
             --info-modal-bg: #ffffff;
             --info-modal-text: #1f2937;
             --info-modal-accent: #0EA5E9;
         }
 
-        /*  تثبيت اتجاه الأرقام داخل النص العربي */
         .num{
             direction: ltr;
             unicode-bidi: isolate;
@@ -48,7 +47,6 @@
             font-weight: 800;
         }
 
-        /* ✅ سطر المعادلة نفسه RTL لكن الأرقام LTR */
         .formula-line{
             direction: rtl;
             unicode-bidi: isolate-override;
@@ -68,9 +66,9 @@
        .install-banner {
     background: #ffffff;
     border: 1px solid #e1e9e7;
-    padding: 4px 12px;      /* ✅ أصغر */
-    border-radius: 14px;   /* أنعم */
-    margin-bottom: 14px;   /* أقل ارتفاع */
+    padding: 4px 12px;      
+    border-radius: 14px;   
+    margin-bottom: 14px;   
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -79,9 +77,9 @@
 
 
         .install-text {
-    font-weight: 600;        /* أخف شوي */
+    font-weight: 600;       
     color: var(--primary);
-    font-size: 0.78rem;     /* أصغر بنسبة بسيطة */
+    font-size: 0.78rem;    
 }
 
 
@@ -100,7 +98,7 @@
         .header-section { text-align: center; margin-bottom: 20px; }
         .college-logo img {
     width: clamp(220px, 60vw, 300px);
-    margin-bottom: 4px;   /* ✅ تقليل المسافة */
+    margin-bottom: 4px;  
     filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
 }
 
@@ -108,7 +106,7 @@
 
   .header-text h1 {
     margin: 0;
-    font-size: clamp(1.9rem, 4.8vw, 2.5rem); /* ✅ يكبر حسب حجم الشاشة */
+    font-size: clamp(1.9rem, 4.8vw, 2.5rem); 
     font-weight: 800;
     color: var(--primary);
     letter-spacing: 0.3px;
@@ -194,12 +192,12 @@
         .input-group { margin-bottom: 12px; }
         .input-group label {
     display: block;
-    font-size: 0.9rem;          /* ⬅️ كان 0.8 */
+    font-size: 0.9rem;          
     color: #334155;
     margin-bottom: 6px;
-    font-weight: 800;          /* أوضح */
+    font-weight: 800;         
     background: #f0f7f9;
-    padding: 6px 12px;         /* أكبر شوي */
+    padding: 6px 12px;         
     border-right: 3px solid var(--secondary);
 }
 
@@ -249,7 +247,7 @@
     box-shadow: 0 6px 14px rgba(14,165,233,0.22);
     transition: transform 0.15s ease;
 
-    order: 2;   /* 👈 أضيفي هذا */
+    order: 2;   
 }
         .hint-icon:active { transform: translateY(1px) scale(0.98); }
 
@@ -394,7 +392,7 @@
 
 <body>
 
-<!-- ✅ Guide Modal (مصحح: إغلاق divs + إضافة Android + محاذاة وسط + خط أصغر) -->
+<!--  Guide Modal (مصحح: إغلاق divs + إضافة Android + محاذاة وسط + خط أصغر) -->
 <div id="guideModal" class="info-overlay" onclick="toggleModal(false)">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
@@ -425,7 +423,7 @@
                 ثم اختر<br>
                 <b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
             </div>
-        </div> <!-- ✅ إغلاق body -->
+        </div> <!--  إغلاق body -->
 
         <div class="info-modal-footer">
             <button class="info-ok" onclick="toggleModal(false)">فهمت</button>
@@ -433,7 +431,7 @@
     </div>
 </div>
 
-<!-- ✅ Info Modal موحّد -->
+<!--  Info Modal موحّد -->
 <div id="infoOverlay" class="info-overlay" onclick="closeInfoModal()">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
@@ -508,8 +506,7 @@
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-    llet selectedWeeks = parseInt(localStorage.getItem('selectedWeeks')) || 16;
-
+    let selectedWeeks = parseInt(localStorage.getItem('selectedWeeks')) || 16;
 
     //  تحديث دالة صيغة كلمة (ساعة/ساعات)
     function hourWord(n) {
@@ -520,7 +517,7 @@
         return "ساعة"; // من 11 فما فوق
     }
 
-    // ✅ تحديث دالة صيغة كلمة (محاضرة/محاضرات)
+    //  تحديث دالة صيغة كلمة (محاضرة/محاضرات)
     function getLectureText(n) {
         let v = Math.abs(n);
         if (v === 0) return "";
@@ -530,7 +527,7 @@
         return `${v} محاضرة`; // من 11 فما فوق
     }
 
-    // ✅ جديد: نص نطاق المحاضرات (بدون ذكر ساعة/ساعتين)
+    //  جديد: نص نطاق المحاضرات (بدون ذكر ساعة/ساعتين)
     function lectureRangeText(minL, maxL) {
         minL = Math.max(0, Math.floor(minL));
         maxL = Math.max(0, Math.floor(maxL));
@@ -557,17 +554,16 @@
     }
 
     function changeWeeks(w) {
-    selectedWeeks = parseInt(w);
+        selectedWeeks = parseInt(w);
 
-    // حفظ الاختيار
-    localStorage.setItem('selectedWeeks', selectedWeeks);
+        // حفظ الاختيار
+        localStorage.setItem('selectedWeeks', selectedWeeks);
 
-    document.getElementById('systemBadge').textContent =
-        `نظام ${selectedWeeks} أسبوعًا (20% حرمان)`;
+        document.getElementById('systemBadge').textContent =
+            `نظام ${selectedWeeks} أسبوعًا (20% حرمان)`;
 
-    renderCourses();
-}
-
+        renderCourses();
+    }
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
@@ -639,7 +635,6 @@
             const currentAbsent = a1 + (a2 * 2);
 
             const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
-            const remainingRaw = limit - currentAbsent; // قد يكون 1.2 مثلاً
 
             // ===== الحالة العامة =====
             let statusClass = 'safe-bg',
@@ -665,72 +660,59 @@
                 infoIconClass = 'warn';
             }
 
-            // ===== منطق التحذير القادم =====
-            let nextStep = 1; // أقل غياب قادم
+            // ===== بناء صندوق النص (advice) =====
+            let advice = '';
 
-            if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-                nextStep = 2; // غالباً الغياب القادم يكون كتلة ساعتين
-            } else if (weeklyH === 1) {
-                nextStep = 1;
+            // لو حرمان: رسالة واحدة فقط
+            if (currentAbsent + EPS >= limit) {
+                advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                            تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+                          </div>`;
             } else {
-                // 3 أو 5
-                nextStep = 1;
+                // ✅ (strict) قبل الحرمان
+                const remainingSafeRaw = (limit - EPS) - currentAbsent;
+
+                // ===== منطق التحذير القادم (بالساعات) =====
+                let nextStep = 1;
+                if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) nextStep = 2;
+                else if (weeklyH === 1 || weeklyH === 3) nextStep = 1;
+                else if (weeklyH === 5) nextStep = 2; // ✅ حتى لا يسبب لبس "متبقي ساعة" في 5 ساعات
+
+                // ✅ إذا وصلنا لمرحلة: أي غياب قادم = حرمان
+                if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
+                    advice = `
+                        <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+                            ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+                        </div>
+                    `;
+                } else {
+                    // الوضع الطبيعي: نعرض "متبقي لك ..."
+                    const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+
+                    // بناء التفاصيل (محاضرات)
+                    let detail = '';
+                    if (weeklyH === 1) {
+                        detail = getLectureText(remInt);
+                    } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+                        detail = getLectureText(Math.floor(remInt / 2));
+                    } else if (weeklyH === 3) {
+                        const twoH = Math.min(4, Math.floor(remInt / 2));
+                        const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+                        detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
+                    } else if (weeklyH === 5) {
+                        const twoH = Math.min(7, Math.floor(remInt / 2));
+                        const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+                        detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
+                    }
+
+                    advice = `
+                        <div class="advice-box">
+                            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                        </div>
+                    `;
+                }
             }
 
-            // ===== بناء نص "متبقي لك" (محاضرات فقط) =====
-            // ===== بناء صندوق النص (advice) =====
-let advice = '';
-
-// لو حرمان: رسالة واحدة فقط
-if (currentAbsent + EPS >= limit) {
-    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
-              </div>`;
-} else {
-    // ✅ (strict) قبل الحرمان
-    const remainingSafeRaw = (limit - EPS) - currentAbsent;
-
-    // ===== منطق التحذير القادم (بالساعات) =====
-    let nextStep = 1;
-    if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) nextStep = 2;
-    else if (weeklyH === 1 || weeklyH === 3) nextStep = 1;
-    else if (weeklyH === 5) nextStep = 2; // ✅ حتى لا يسبب لبس "متبقي ساعة" في 5 ساعات
-
-    // ✅ إذا وصلنا لمرحلة: أي غياب قادم = حرمان
-    // هنا نحذف تمامًا عبارة "متبقي لك 0/1 ساعة" حسب طلبك
-    if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-        advice = `
-            <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-            </div>
-        `;
-    } else {
-        // الوضع الطبيعي: نعرض "متبقي لك ..."
-        const remInt = Math.max(0, Math.floor(remainingSafeRaw));
-
-        // بناء التفاصيل (محاضرات)
-        let detail = '';
-        if (weeklyH === 1) {
-            detail = getLectureText(remInt);
-        } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-            detail = getLectureText(Math.floor(remInt / 2));
-        } else if (weeklyH === 3) {
-            const twoH = Math.min(4, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
-        } else if (weeklyH === 5) {
-            const twoH = Math.min(7, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
-        }
-
-        advice = `
-            <div class="advice-box">
-                متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-            </div>
-        `;
-    }
-}
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2);
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
@@ -824,12 +806,11 @@ if (currentAbsent + EPS >= limit) {
     function deleteCourse(id) { if (confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
-    wwindow.onload = function () {
-    const sel = document.getElementById('weeksSelect');
-    if (sel) sel.value = selectedWeeks;
-    changeWeeks(selectedWeeks);
-};
-
+    window.onload = function () {
+        const sel = document.getElementById('weeksSelect');
+        if (sel) sel.value = selectedWeeks;
+        changeWeeks(selectedWeeks);
+    };
 </script>
 </body>
 </html>
