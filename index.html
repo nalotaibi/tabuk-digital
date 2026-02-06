@@ -644,16 +644,14 @@ function countDayOccurrences(dayName){
     }
 
     function addNewCourse() {
-    courses.push({
-        id: Date.now(),
-        name: 'اسم المقرر',
-        meetings: [
-            { day: 'الأحد', dur: 2 }   // لقاء افتراضي
-        ],
-        absent1: '',
-        absent2: ''
-    });
-    renderCourses();
+  courses.push({
+    id: Date.now(),
+    name: 'اسم المقرر',
+    meetings: [
+      { day: 'الأحد', dur: 2, absent: '' }
+    ]
+  });
+  renderCourses();
 }
 
 
@@ -716,39 +714,48 @@ function countDayOccurrences(dayName){
 
     function ensureMeetings(course){
   if (!Array.isArray(course.meetings)) course.meetings = [];
+
   course.meetings = course.meetings.slice(0,3);
-  if (course.meetings.length === 0) course.meetings.push({ day:'الأحد', dur:2 });
+
+  if (course.meetings.length === 0) {
+    course.meetings.push({ day:'الأحد', dur:2, absent:'' });
+  }
+
+  course.meetings.forEach(m => {
+    if (!m.day) m.day = 'الأحد';
+    m.dur = Number(m.dur) === 1 ? 1 : 2;
+    if (m.absent === undefined) m.absent = '';
+  });
 }
+
 
 function addMeeting(courseId){
   const i = courses.findIndex(c => c.id === courseId);
   if (i === -1) return;
+
   ensureMeetings(courses[i]);
   if (courses[i].meetings.length >= 3) return;
-  courses[i].meetings.push({ day:'الاثنين', dur:1 });
+
+  courses[i].meetings.push({ day:'الاثنين', dur:1, absent:'' });
   renderCourses();
 }
 
 function removeMeeting(courseId){
   const i = courses.findIndex(c => c.id === courseId);
   if (i === -1) return;
+
   ensureMeetings(courses[i]);
-  if (courses[i].meetings.length <= 1) return; // لقاء واحد على الأقل
+  if (courses[i].meetings.length <= 1) return;
+
   courses[i].meetings.pop();
-
-  // إعادة ضبط الغياب إذا اختفى أحد الأنواع
-  const m = courses[i].meetings;
-  const has1 = m.some(x => Number(x.dur) === 1);
-  const has2 = m.some(x => Number(x.dur) === 2);
-  if (!has1) courses[i].absent1 = '';
-  if (!has2) courses[i].absent2 = '';
-
   renderCourses();
 }
+
 
 function updateMeeting(courseId, idx, field, value){
   const i = courses.findIndex(c => c.id === courseId);
   if (i === -1) return;
+
   ensureMeetings(courses[i]);
 
   const m = courses[i].meetings[idx];
@@ -756,16 +763,11 @@ function updateMeeting(courseId, idx, field, value){
 
   if (field === 'day') m.day = value;
   if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2;
-
-  // إعادة ضبط الغياب إذا تغيرت الأنواع
-  const mm = courses[i].meetings;
-  const has1 = mm.some(x => Number(x.dur) === 1);
-  const has2 = mm.some(x => Number(x.dur) === 2);
-  if (!has1) courses[i].absent1 = '';
-  if (!has2) courses[i].absent2 = '';
+  if (field === 'absent') m.absent = fixNumbers(value);
 
   renderCourses();
 }
+
 
     function renderCourses() {
   const list = $('coursesList');
@@ -985,7 +987,6 @@ function updateMeeting(courseId, idx, field, value){
   localStorage.setItem('myCourses', JSON.stringify(courses));
 }
 
-    function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
     function updateCourse(id, field, value) {
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
