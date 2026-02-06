@@ -858,11 +858,13 @@ if (currentAbsent + EPS >= limit) {
   statusColor = 'var(--danger)';
   msg = '🔴 حالة حرمان';
   infoIconClass = 'danger';
-} else if (percent >= 15 || (limit - currentAbsent) <= (minDur * 2 + EPS)) {
+
+} else if (percent >= 15) {
   statusClass = 'warning-bg';
   statusColor = 'var(--orange)';
   msg = '🟠 تنبيه: اقتربت من الحرمان';
   infoIconClass = 'warn';
+
 } else if (percent >= 10) {
   statusClass = 'warning-bg';
   statusColor = 'var(--warning)';
