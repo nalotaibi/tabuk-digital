@@ -708,10 +708,10 @@ function countDayOccurrences(dayName){
    function openLimitInfo(weeklyH, totalHours, limit) {
   const fixed = Number(limit).toFixed(1);
   const text = `
-    <div>📘 صار الحساب مرتبط بالتقويم الحقيقي:</div>
+    <div>  حساب الحرمان بناءً على التقويم التدريبي للفصل التدريبي الثاني 1447 :</div>
     <div style="margin-top:8px;">
-      • مجموع الساعات الأسبوعية (من اللقاءات): <b class="num">${weeklyH}</b><br>
-      • الساعات الفعلية في الترم (بعد حذف الإجازات والفجوة): <b class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</b> ساعة
+      • مجموع الساعات الأسبوعية (من عدد اللقاءات): <b class="num">${weeklyH}</b><br>
+      • الساعات الفعلية في الترم (بعد حذف الإجازات الرسمية): <b class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</b> ساعة
     </div>
     <div class="formula-line" style="margin-top:10px;">
       ( <span class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</span> ساعة ) × <span class="num">20%</span>
