@@ -781,43 +781,55 @@ function updateMeeting(courseId, idx, field, value){
   }
 
   courses.forEach(course => {
-    // ✅ تأكيد meetings
+    // ✅ تأكيد وجود اللقاءات وبنية absent لكل لقاء
     ensureMeetings(course);
 
-    // ===== حساب الساعات بالتقويم الحقيقي =====
-    const meetings = Array.isArray(course.meetings) ? course.meetings.slice(0,3) : [];
-
-    const cleanMeetings = meetings
+    // ==================
+    // ✅ تنظيف اللقاءات
+    // ==================
+    const cleanMeetings = (course.meetings || []).slice(0, 3)
       .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-      .map(m => ({ day: m.day, dur: Number(m.dur) }));
+      .map(m => ({
+        day: m.day,
+        dur: Number(m.dur),
+        absent: parseFloat(m.absent) || 0
+      }));
 
-    const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+    // مجموع الساعات الأسبوعية (للعرض)
+    const weeklyH = cleanMeetings.reduce((s, m) => s + m.dur, 0);
 
+    // ==================
+    // ✅ حساب الساعات الفعلية بالتقويم الحقيقي
+    // ==================
     const dayCountCache = {};
-    function dayCount(dayName){
-      if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
+    function dayCount(dayName) {
+      if (dayCountCache[dayName] === undefined) {
+        dayCountCache[dayName] = countDayOccurrences(dayName);
+      }
       return dayCountCache[dayName];
     }
 
-    const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
+    // الساعات الفعلية في الترم = Σ (عدد لقاءات اليوم × مدة اللقاء)
+    const totalHours = cleanMeetings.reduce((s, m) => s + (dayCount(m.day) * m.dur), 0);
+
+    // حد الحرمان 20%
     const limit = totalHours * 0.20;
 
-    const has1 = cleanMeetings.some(m => m.dur === 1);
-    const has2 = cleanMeetings.some(m => m.dur === 2);
+    // الغياب بالساعات = Σ (مرات غياب اللقاء × مدة اللقاء)
+    const currentAbsent = cleanMeetings.reduce((s, m) => s + (m.absent * m.dur), 0);
 
-    const a1 = parseFloat(course.absent1) || 0;
-    const a2 = parseFloat(course.absent2) || 0;
-
-    const currentAbsent = (has1 ? a1 : 0) + (has2 ? (a2 * 2) : 0);
-
-    // ✅ percent مرة واحدة فقط
     const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
 
-    // ===== حالة اللون =====
+    // أقل غياب قادم محتمل = أقل مدة موجودة (1 أو 2)
+    const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
+
+    // ==================
+    // ✅ تحديد الحالة اللونية
+    // ==================
     let statusClass = 'safe-bg',
-        statusColor = 'var(--safe)',
-        msg = '🟢 وضعك آمن ومستقر',
-        infoIconClass = '';
+      statusColor = 'var(--safe)',
+      msg = '🟢 وضعك آمن ومستقر',
+      infoIconClass = '';
 
     if (currentAbsent + EPS >= limit) {
       statusClass = 'danger-bg';
@@ -836,16 +848,18 @@ function updateMeeting(courseId, idx, field, value){
       infoIconClass = 'warn';
     }
 
-    // ===== نص المتبقي/التحذير =====
+    // ==================
+    // ✅ صندوق النص (متبقي/تحذير)
+    // ==================
     let advice = '';
 
     if (currentAbsent + EPS >= limit) {
       advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                  تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+                  تجاوزتِ الحد المسموح (${fmt(limit, 1)} ${hourWord(limit)})
                 </div>`;
     } else {
       const remainingSafeRaw = (limit - EPS) - currentAbsent;
-      const nextStep = has1 ? 1 : 2;
+      const nextStep = minDur; // 1 أو 2
 
       if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
         advice = `
@@ -855,31 +869,30 @@ function updateMeeting(courseId, idx, field, value){
         `;
       } else {
         const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+
+        // تفاصيل “كم لقاء ممكن” حسب الأنواع الموجودة (ساعة/ساعتين)
+        const has1 = cleanMeetings.some(m => m.dur === 1);
+        const has2 = cleanMeetings.some(m => m.dur === 2);
+
         const remMeet1 = has1 ? Math.floor(remainingSafeRaw / 1) : 0;
         const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
 
         let detail = '';
-        if (has1 && has2) {
-          detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
-        } else if (has2) {
-          detail = `${getLectureText(remMeet2)} (ساعتين)`;
-        } else {
-          detail = `${getLectureText(remMeet1)} (ساعة)`;
-        }
+        if (has1 && has2) detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
+        else if (has2) detail = `${getLectureText(remMeet2)} (ساعتين)`;
+        else detail = `${getLectureText(remMeet1)} (ساعة)`;
 
         advice = `
           <div class="advice-box">
-            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+            متبقي لك <b>${fmt(remInt, 0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
           </div>
         `;
       }
     }
 
-    const isComplexType = (has1 && has2);
-    const showAbsent1 = has1;
-    const showAbsent2 = has2;
-
-    // ===== بناء البطاقة =====
+    // ==================
+    // ✅ بناء البطاقة
+    // ==================
     const card = document.createElement('div');
     card.className = 'course-card';
 
@@ -896,8 +909,10 @@ function updateMeeting(courseId, idx, field, value){
         <div id="meetWrap-${course.id}"></div>
 
         <div style="display:flex; gap:8px; margin-top:10px;">
-          <button type="button" class="reset-all" style="flex:1;" onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
-          <button type="button" class="reset-all" style="flex:1;" onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
+          <button type="button" class="reset-all" style="flex:1;"
+            onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
+          <button type="button" class="reset-all" style="flex:1;"
+            onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
         </div>
 
         <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
@@ -905,48 +920,23 @@ function updateMeeting(courseId, idx, field, value){
         </div>
       </div>
 
-      <div class="input-group">
-        <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
-
-        <div class="flex-inputs">
-          ${showAbsent2 ? `<div>
-            ${isComplexType ? `<span class="input-sub-label">
-              <span class="hint-icon" onclick="openHintTwoHours()">?</span>
-              محاضرة (فئة ساعتين)
-            </span>` : ''}
-            <input type="text" inputmode="numeric"
-              value="${course.absent2}" placeholder="0"
-              oninput="handleInput(${course.id}, 'absent2', this)">
-          </div>` : ''}
-
-          ${showAbsent1 ? `<div>
-            ${isComplexType ? `<span class="input-sub-label">
-              <span class="hint-icon" onclick="openHintOneHour()">?</span>
-              محاضرة (فئة ساعة)
-            </span>` : ''}
-            <input type="text" inputmode="numeric"
-              value="${course.absent1}" placeholder="0"
-              oninput="handleInput(${course.id}, 'absent1', this)">
-          </div>` : ''}
-        </div>
-      </div>
-
       <div class="result-area ${statusClass}">
         <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
 
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-          <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
+          <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent, 1)}%</span>
           <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
         </div>
 
         <div class="progress-bar">
-          <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
+          <div class="progress-fill" style="width:${Math.min((percent / 20) * 100, 100)}%; background:${statusColor}"></div>
         </div>
 
         <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-          <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
+          <span>غيابك الحالي: ${fmt(currentAbsent, 1)} ${hourWord(currentAbsent)}</span>
+
           <span>
-            حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
+            حد الحرمان: ${fmt(limit, 1)} ${hourWord(limit)}
             <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
           </span>
         </div>
@@ -955,28 +945,37 @@ function updateMeeting(courseId, idx, field, value){
       </div>
     `;
 
-    // ✅ الآن نضيف البطاقة للصفحة
     list.appendChild(card);
 
-    // ✅ تعبئة اللقاءات بعد بناء DOM
+    // ==================
+    // ✅ تعبئة صفوف اللقاءات (اليوم + المدة + الغياب)
+    // ==================
     const wrap = card.querySelector(`#meetWrap-${course.id}`);
     if (wrap) {
-      wrap.innerHTML = (course.meetings || []).slice(0,3).map((m, idx) => `
+      wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
         <div class="flex-inputs" style="margin-top:8px;">
           <div>
             <div class="input-sub-label">اليوم</div>
             <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
               ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map(d =>
-                `<option value="${d}" ${(m.day===d)?'selected':''}>${d}</option>`
+                `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
               ).join('')}
             </select>
           </div>
+
           <div>
             <div class="input-sub-label">المدة</div>
             <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-              <option value="1" ${Number(m.dur)===1?'selected':''}>ساعة</option>
-              <option value="2" ${Number(m.dur)===2?'selected':''}>ساعتين</option>
+              <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
+              <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
             </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">الغياب</div>
+            <input type="text" inputmode="numeric"
+              value="${m.absent ?? ''}" placeholder="0"
+              oninput="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
           </div>
         </div>
       `).join('');
