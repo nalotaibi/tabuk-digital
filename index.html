@@ -898,15 +898,23 @@ if (currentAbsent + EPS >= limit) {
 
         // تفاصيل “كم لقاء ممكن” حسب الأنواع الموجودة (ساعة/ساعتين)
         const has1 = cleanMeetings.some(m => m.dur === 1);
-        const has2 = cleanMeetings.some(m => m.dur === 2);
+const has2 = cleanMeetings.some(m => m.dur === 2);
 
-        const remMeet1 = has1 ? Math.floor(remainingSafeRaw / 1) : 0;
-        const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
+// نوزع الساعات المتبقية حسب الجدول الحقيقي (نستهلك الساعتين أولًا)
+let rem = remainingSafeRaw;
 
-        let detail = '';
-        if (has1 && has2) detail = `${getLectureText(remMeet2)} (ساعتين) أو ${getLectureText(remMeet1)} (ساعة)`;
-        else if (has2) detail = `${getLectureText(remMeet2)} (ساعتين)`;
-        else detail = `${getLectureText(remMeet1)} (ساعة)`;
+let used2 = has2 ? Math.floor(rem / 2) : 0;
+rem -= used2 * 2;
+
+let used1 = has1 ? Math.floor(rem / 1) : 0;
+
+let detailParts = [];
+
+if (has2 && used2 > 0) detailParts.push(`${getLectureText(used2)} (ساعتين)`);
+if (has1 && used1 > 0) detailParts.push(`${getLectureText(used1)} (ساعة)`);
+
+let detail = detailParts.join(' + ');
+
 
         advice = `
           <div class="advice-box">
