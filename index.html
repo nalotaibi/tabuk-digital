@@ -847,36 +847,35 @@ if (isDeprived) {
   const absent = absentByType[type];
   const limit = limitByType[type];
 
-  // 🎨 ألوان الشق
-  const typeColor = (type === 'نظري') ? '#2563eb' : '#16a34a';
+  // لون عبارة "يتبقى لك"
+  let remainColor = '#16a34a'; // أخضر افتراضي
 
-  let color = '#16a34a'; // لون افتراضي آمن
-  let weight = '700';
-  let icon = '';
+  if (remaining === 1){
+    remainColor = '#facc15'; // أصفر
+  }
 
   if (remaining === 0){
-    color = '#dc2626'; // أحمر
-    weight = '900';
-    icon = '⚠️ ';
-  }
-  else if (remaining === 1){
-    color = '#f97316'; // برتقالي
-    weight = '900';
-    icon = '⚠️ ';
+    remainColor = '#fb923c'; // برتقالي قوي
   }
 
   return `
-    <div style="color:${color}; font-weight:${weight}; margin-bottom:6px;">
-      ${icon}
-      <b style="color:${typeColor};">ال${type}:</b>
+    <div style="margin-bottom:6px; line-height:1.8; font-weight:700;">
+
+      <b style="color:#2563eb;">ال${type}:</b>
+
       غيابك 
       <span class="primary-num">${absent}</span> 
       من 
       <span class="primary-num">${limit}</span>
+
       —
-      يتبقى لك 
-      <span class="primary-num">${remaining}</span> 
-      ${lectureWord(remaining)}
+
+      <span style="color:${remainColor}; font-weight:900;">
+        يتبقى لك 
+        <span class="primary-num">${remaining}</span> 
+        ${lectureWord(remaining)}
+      </span>
+
     </div>
   `;
 }
