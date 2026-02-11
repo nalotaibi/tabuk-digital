@@ -823,7 +823,17 @@ function lectureWord(n){
     : '';
 
   // نص الإرشاد
+    // نص الإرشاد (مُصحّح للشقّين)
   let advice = '';
+
+  // نحسب المتبقي لكل شق (لأن الحرمان يبدأ عند = limit)
+  const remainingByType = {
+    'نظري': hasTheory ? ((limitByType['نظري'] - 1) - absentByType['نظري']) : null,
+    'عملي': hasPrac   ? ((limitByType['عملي'] - 1) - absentByType['عملي']) : null
+  };
+
+  const dangerTheory = hasTheory && remainingByType['نظري'] <= 0;
+  const dangerPrac   = hasPrac   && remainingByType['عملي'] <= 0;
 
   if (isDeprived) {
     advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
@@ -831,20 +841,43 @@ function lectureWord(n){
                 ${detailHTML}
               </div>`;
   } else {
-    // المتبقي للأشد (لأنه الأقرب للحرمان)
-    const focusTotal = (focusType === 'عملي') ? totalByType['عملي'] : totalByType['نظري'];
-    const focusLimit = (focusType === 'عملي') ? limitByType['عملي'] : limitByType['نظري'];
-    const focusAbs   = (focusType === 'عملي') ? absentByType['عملي'] : absentByType['نظري'];
 
-    const remaining = (focusLimit - 1) - focusAbs; // لأن الحرمان يبدأ عند =limit
-    if (remaining <= 0) {
+    // ✅ إذا الشقّين كلاهما خطر: أي غياب في أي شق يسبب الحرمان
+    if (dangerTheory && dangerPrac) {
       advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                  ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+                  ⚠️ أي غياب قادم (نظري أو عملي) سيؤدي إلى الحرمان
                   ${detailHTML}
                 </div>`;
-    } else {
+    }
+
+    // ✅ إذا واحد فقط خطر: نحدد الشق بالاسم
+    else if (dangerTheory) {
+      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+                  ⚠️ أي غياب قادم في <b>النظري</b> سيؤدي إلى الحرمان
+                  ${detailHTML}
+                </div>`;
+    }
+    else if (dangerPrac) {
+      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+                  ⚠️ أي غياب قادم في <b>العملي</b> سيؤدي إلى الحرمان
+                  ${detailHTML}
+                </div>`;
+    }
+
+    // ✅ غير خطر: نعرض المتبقي للأقرب للحرمان (الأقل متبقي)
+    else {
+      let focusType = 'نظري';
+      if (hasTheory && hasPrac) {
+        focusType = (remainingByType['عملي'] < remainingByType['نظري']) ? 'عملي' : 'نظري';
+      } else if (hasPrac) {
+        focusType = 'عملي';
+      }
+
+      const remaining = remainingByType[focusType];
+
       advice = `<div class="advice-box">
-                  متبقي لك <b class="primary-num">${remaining}</b> ${lectureWord(remaining)} (الأقرب: ${focusType})
+                  متبقي لك <b class="primary-num">${remaining}</b> ${lectureWord(remaining)}
+                  ${hasTheory && hasPrac ? `(الأقرب: ${focusType})` : ''}
                   ${detailHTML}
                 </div>`;
     }
