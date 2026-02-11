@@ -877,7 +877,7 @@ function lectureWord(n){
 
       advice = `<div class="advice-box">
                   متبقي لك <b class="primary-num">${remaining}</b> ${lectureWord(remaining)}
-                  ${hasTheory && hasPrac ? `(الأقرب: ${focusType})` : ''}
+                  ${hasTheory && hasPrac ? `<span style="color:#64748b; font-weight:800;">(الأقرب للحرمان: ${focusType})</span>` : ''}
                   ${detailHTML}
                 </div>`;
     }
