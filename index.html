@@ -824,16 +824,13 @@ function lectureWord(n){
 
   // نص الإرشاد
     // نص الإرشاد (مُصحّح للشقّين)
+    // نص الإرشاد (عرض مستقل لكل شق)
   let advice = '';
 
-  // نحسب المتبقي لكل شق (لأن الحرمان يبدأ عند = limit)
   const remainingByType = {
     'نظري': hasTheory ? ((limitByType['نظري'] - 1) - absentByType['نظري']) : null,
     'عملي': hasPrac   ? ((limitByType['عملي'] - 1) - absentByType['عملي']) : null
   };
-
-  const dangerTheory = hasTheory && remainingByType['نظري'] <= 0;
-  const dangerPrac   = hasPrac   && remainingByType['عملي'] <= 0;
 
   if (isDeprived) {
     advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
@@ -842,46 +839,36 @@ function lectureWord(n){
               </div>`;
   } else {
 
-    // ✅ إذا الشقّين كلاهما خطر: أي غياب في أي شق يسبب الحرمان
-    if (dangerTheory && dangerPrac) {
-      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                  ⚠️ أي غياب قادم (نظري أو عملي) سيؤدي إلى الحرمان
-                  ${detailHTML}
-                </div>`;
-    }
+    let lines = [];
 
-    // ✅ إذا واحد فقط خطر: نحدد الشق بالاسم
-    else if (dangerTheory) {
-      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                  ⚠️ أي غياب قادم في <b>النظري</b> سيؤدي إلى الحرمان
-                  ${detailHTML}
-                </div>`;
-    }
-    else if (dangerPrac) {
-      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                  ⚠️ أي غياب قادم في <b>العملي</b> سيؤدي إلى الحرمان
-                  ${detailHTML}
-                </div>`;
-    }
-
-    // ✅ غير خطر: نعرض المتبقي للأقرب للحرمان (الأقل متبقي)
-    else {
-      let focusType = 'نظري';
-      if (hasTheory && hasPrac) {
-        focusType = (remainingByType['عملي'] < remainingByType['نظري']) ? 'عملي' : 'نظري';
-      } else if (hasPrac) {
-        focusType = 'عملي';
+    if (hasTheory) {
+      if (remainingByType['نظري'] <= 0) {
+        lines.push(`⚠️ <b style="color:var(--danger)">النظري:</b> أي غياب قادم سيؤدي إلى الحرمان`);
+      } else {
+        lines.push(`<b>النظري:</b> متبقي لك 
+          <span class="primary-num">${remainingByType['نظري']}</span> 
+          ${lectureWord(remainingByType['نظري'])}`);
       }
-
-      const remaining = remainingByType[focusType];
-
-      advice = `<div class="advice-box">
-                  متبقي لك <b class="primary-num">${remaining}</b> ${lectureWord(remaining)}
-                  ${hasTheory && hasPrac ? `<span style="color:#64748b; font-weight:800;">(الأقرب للحرمان: ${focusType})</span>` : ''}
-                  ${detailHTML}
-                </div>`;
     }
+
+    if (hasPrac) {
+      if (remainingByType['عملي'] <= 0) {
+        lines.push(`⚠️ <b style="color:var(--danger)">العملي:</b> أي غياب قادم سيؤدي إلى الحرمان`);
+      } else {
+        lines.push(`<b>العملي:</b> متبقي لك 
+          <span class="primary-num">${remainingByType['عملي']}</span> 
+          ${lectureWord(remainingByType['عملي'])}`);
+      }
+    }
+
+    advice = `
+      <div class="advice-box" style="line-height:1.8;">
+        ${lines.join('<br>')}
+        ${detailHTML}
+      </div>
+    `;
   }
+
 
   // للعرض أعلى البطاقة
   const weeklyMeetings = cleanMeetings.length; // عدد اللقاءات الأسبوعية (إجمالي)
