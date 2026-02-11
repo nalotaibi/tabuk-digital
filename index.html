@@ -485,7 +485,23 @@
 
 <script>
   let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-  const selectedWeeks = 16; // للتوافق فقط
+const selectedWeeks = 16; // للتوافق فقط
+
+// ===== قاعدة رايات (مطابقة) =====
+const SYSTEM_WEEKS = 19;
+const DEPRIVATION_RATE = 0.20;
+const EPS = 1e-9;
+
+function ceilLimit(totalLectures){
+  return Math.ceil((totalLectures * DEPRIVATION_RATE) - EPS); // أول عدد يحقق ≥20%
+}
+function floor1(x){
+  return Math.floor((Number(x)||0) * 10) / 10; // Floor لعشري واحد
+}
+function lectureWord(n){
+  return (Math.abs(parseInt(n||0,10)) === 1) ? "لقاء" : "لقاءات";
+}
+
 
   function $(id){ return document.getElementById(id); }
 
@@ -578,13 +594,14 @@
   }
 
   function addNewCourse() {
-    courses.push({
-      id: Date.now(),
-      name: 'اسم المقرر',
-      meetings: [{ day: 'الأحد', dur: 2, absent: '' }]
-    });
-    renderCourses();
-  }
+  courses.push({
+    id: Date.now(),
+    name: 'اسم المقرر',
+    meetings: [{ day: 'الأحد', dur: 2, type: 'نظري', absent: '' }]
+  });
+  renderCourses();
+}
+
 
   function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
     const t = $('infoTitle'), tx = $('infoText'), b = $('infoBadge'), f = $('infoFormula'), ov = $('infoOverlay');
@@ -631,30 +648,32 @@
   }
 
   function ensureMeetings(course){
-    if (!Array.isArray(course.meetings)) course.meetings = [];
-    course.meetings = course.meetings.slice(0,3);
+  if (!Array.isArray(course.meetings)) course.meetings = [];
+  course.meetings = course.meetings.slice(0,3);
 
-    if (course.meetings.length === 0) {
-      course.meetings.push({ day:'الأحد', dur:2, absent:'' });
-    }
-
-    course.meetings.forEach(m => {
-      if (!m.day) m.day = 'الأحد';
-      m.dur = Number(m.dur) === 1 ? 1 : 2;
-      if (m.absent === undefined) m.absent = '';
-    });
+  if (course.meetings.length === 0) {
+    course.meetings.push({ day:'الأحد', dur:2, type:'نظري', absent:'' });
   }
+
+  course.meetings.forEach(m => {
+    if (!m.day) m.day = 'الأحد';
+    m.dur = Number(m.dur) === 1 ? 1 : 2;     // للعرض فقط (لا يدخل بالحسبة)
+    if (!m.type) m.type = 'نظري';            // ✅ الجديد
+    if (m.absent === undefined) m.absent = '';
+  });
+}
 
   function addMeeting(courseId){
-    const i = courses.findIndex(c => c.id === courseId);
-    if (i === -1) return;
+  const i = courses.findIndex(c => c.id === courseId);
+  if (i === -1) return;
 
-    ensureMeetings(courses[i]);
-    if (courses[i].meetings.length >= 3) return;
+  ensureMeetings(courses[i]);
+  if (courses[i].meetings.length >= 3) return;
 
-    courses[i].meetings.push({ day:'الاثنين', dur:1, absent:'' });
-    renderCourses();
-  }
+  courses[i].meetings.push({ day:'الاثنين', dur:1, type:'عملي', absent:'' });
+  renderCourses();
+}
+
 
   function removeMeeting(courseId){
     const i = courses.findIndex(c => c.id === courseId);
@@ -668,103 +687,161 @@
   }
 
   function updateMeeting(courseId, idx, field, value, doRender = true){
-    const i = courses.findIndex(c => c.id === courseId);
-    if (i === -1) return;
+  const i = courses.findIndex(c => c.id === courseId);
+  if (i === -1) return;
 
-    ensureMeetings(courses[i]);
-    const m = courses[i].meetings[idx];
-    if (!m) return;
+  ensureMeetings(courses[i]);
+  const m = courses[i].meetings[idx];
+  if (!m) return;
 
-    if (field === 'day') m.day = value;
-    if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2;
-    if (field === 'absent') m.absent = fixNumbers(value);
+  if (field === 'day') m.day = value;
+  if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2; // للعرض فقط
+  if (field === 'type') m.type = value;                     // ✅ الجديد
+  if (field === 'absent') m.absent = fixNumbers(value);
 
-    if (doRender) renderCourses();
-  }
+  if (doRender) renderCourses();
+}
+
 
   function computeCourseState(course){
-    ensureMeetings(course);
-    const EPS = 1e-9;
+  ensureMeetings(course);
 
-    const cleanMeetings = (course.meetings || []).slice(0, 3)
-      .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-      .map(m => ({ day: m.day, dur: Number(m.dur), absent: parseFloat(m.absent) || 0 }));
+  const cleanMeetings = (course.meetings || []).slice(0, 3)
+    .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
+    .map(m => ({
+      day: m.day,
+      dur: Number(m.dur),                     // للعرض فقط
+      type: (m.type === 'عملي') ? 'عملي' : 'نظري',
+      absent: parseInt(m.absent, 10) || 0     // ✅ غيابات باللقاءات
+    }));
 
-    const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+  // عدد اللقاءات الأسبوعية لكل شق
+  const weeklyByType = { 'نظري': 0, 'عملي': 0 };
+  cleanMeetings.forEach(m => weeklyByType[m.type]++);
 
-    const dayCountCache = {};
-    function dayCount(dayName){
-      if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
-      return dayCountCache[dayName];
-    }
+  // إجمالي اللقاءات في الترم لكل شق
+  const totalByType = {
+    'نظري': weeklyByType['نظري'] * SYSTEM_WEEKS,
+    'عملي': weeklyByType['عملي'] * SYSTEM_WEEKS
+  };
 
-    const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
-    const limit = totalHours * 0.20;
-    const currentAbsent = cleanMeetings.reduce((s,m)=> s + (m.absent * m.dur), 0);
-    const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+  // حد الحرمان لكل شق (Ceil)
+  const limitByType = {
+    'نظري': ceilLimit(totalByType['نظري']),
+    'عملي': ceilLimit(totalByType['عملي'])
+  };
 
-    let statusClass = 'safe-bg';
-    let statusColor = 'var(--safe)';
-    let msg = '🟢 وضعك آمن ومستقر';
+  // الغياب الحالي لكل شق
+  const absentByType = { 'نظري': 0, 'عملي': 0 };
+  cleanMeetings.forEach(m => { absentByType[m.type] += m.absent; });
 
-    if (currentAbsent + EPS >= limit) {
-      statusClass = 'danger-bg';
-      statusColor = 'var(--danger)';
-      msg = '🔴 حالة حرمان';
-    } else if (percent >= 15) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--orange)';
-      msg = '🟠 تنبيه: اقتربت من الحرمان';
-    } else if (percent >= 10) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--warning)';
-      msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-    }
+  // النسبة لكل شق (لعرضها بـ Floor)
+  function pct(abs, total){
+    if (!total) return 0;
+    return (abs / total) * 100;
+  }
 
-    const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
-    let advice = '';
+  const pctTheory = pct(absentByType['نظري'], totalByType['نظري']);
+  const pctPrac   = pct(absentByType['عملي'], totalByType['عملي']);
 
-    function fmt(n, digits = 1) {
-      const x = Number(n);
-      if (!Number.isFinite(x)) return '0';
-      return x.toFixed(digits).replace(/\.0+$/, '');
-    }
+  // نعرض "الأشد" (الأعلى نسبة) حتى يكون التحذير واضح
+  const hasTheory = totalByType['نظري'] > 0;
+  const hasPrac   = totalByType['عملي'] > 0;
 
-    if (currentAbsent + EPS >= limit) {
-      advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                  تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+  let focusType = 'نظري';
+  if (hasTheory && hasPrac) {
+    focusType = (pctPrac > pctTheory) ? 'عملي' : 'نظري';
+  } else if (hasPrac) {
+    focusType = 'عملي';
+  }
+
+  const focusPctRaw = (focusType === 'عملي') ? pctPrac : pctTheory;
+  const percentShown = floor1(focusPctRaw);
+
+  // الحرمان إذا أي شق وصل حدّه
+  const deprivedTheory = hasTheory && (absentByType['نظري'] + EPS >= limitByType['نظري']);
+  const deprivedPrac   = hasPrac   && (absentByType['عملي'] + EPS >= limitByType['عملي']);
+  const isDeprived = deprivedTheory || deprivedPrac;
+
+  let statusClass = 'safe-bg';
+  let statusColor = 'var(--safe)';
+  let msg = '🟢 وضعك آمن ومستقر';
+
+  if (isDeprived) {
+    statusClass = 'danger-bg';
+    statusColor = 'var(--danger)';
+    msg = '🔴 حالة حرمان';
+  } else if (percentShown >= 15) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--orange)';
+    msg = '🟠 تنبيه: اقتربت من الحرمان';
+  } else if (percentShown >= 10) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--warning)';
+    msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+  }
+
+  function fmtInt(n){ return String(Math.max(0, parseInt(n||0,10))); }
+
+  // نص التفصيل: نظري + عملي
+  let detailLines = [];
+  if (hasTheory){
+    detailLines.push(`النظري: ${fmtInt(absentByType['نظري'])}/${fmtInt(limitByType['نظري'])} لقاء`);
+  }
+  if (hasPrac){
+    detailLines.push(`العملي: ${fmtInt(absentByType['عملي'])}/${fmtInt(limitByType['عملي'])} لقاء`);
+  }
+  const detailHTML = detailLines.length
+    ? `<div style="margin-top:6px; font-size:0.78rem; color:#475569; font-weight:800; line-height:1.6;">${detailLines.join('<br>')}</div>`
+    : '';
+
+  // نص الإرشاد
+  let advice = '';
+
+  if (isDeprived) {
+    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                تجاوزتِ الحد المسموح.
+                ${detailHTML}
+              </div>`;
+  } else {
+    // المتبقي للأشد (لأنه الأقرب للحرمان)
+    const focusTotal = (focusType === 'عملي') ? totalByType['عملي'] : totalByType['نظري'];
+    const focusLimit = (focusType === 'عملي') ? limitByType['عملي'] : limitByType['نظري'];
+    const focusAbs   = (focusType === 'عملي') ? absentByType['عملي'] : absentByType['نظري'];
+
+    const remaining = (focusLimit - 1) - focusAbs; // لأن الحرمان يبدأ عند =limit
+    if (remaining <= 0) {
+      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+                  ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+                  ${detailHTML}
                 </div>`;
     } else {
-      const remainingSafeRaw = (limit - EPS) - currentAbsent;
-      const nextStep = minDur;
-
-      if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-        advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                    ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-                  </div>`;
-      } else {
-        const remInt = Math.max(0, Math.floor(remainingSafeRaw));
-        const has1 = cleanMeetings.some(m => m.dur === 1);
-        const has2 = cleanMeetings.some(m => m.dur === 2);
-
-        let rem = remainingSafeRaw;
-        let used2 = has2 ? Math.floor(rem / 2) : 0;
-        rem -= used2 * 2;
-        let used1 = has1 ? Math.floor(rem / 1) : 0;
-
-        let parts = [];
-        if (has2 && used2 > 0) parts.push(`${getLectureText(used2)} (ساعتين)`);
-        if (has1 && used1 > 0) parts.push(`${getLectureText(used1)} (ساعة)`);
-        const detail = parts.join(' + ');
-
-        advice = `<div class="advice-box">
-                    متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-                  </div>`;
-      }
+      advice = `<div class="advice-box">
+                  متبقي لك <b class="primary-num">${remaining}</b> ${lectureWord(remaining)} (الأقرب: ${focusType})
+                  ${detailHTML}
+                </div>`;
     }
-
-    return { weeklyH, totalHours, limit, currentAbsent, percent, statusClass, statusColor, msg, advice };
   }
+
+  // للعرض أعلى البطاقة
+  const weeklyMeetings = cleanMeetings.length; // عدد اللقاءات الأسبوعية (إجمالي)
+  const totalLecturesAll = (weeklyMeetings * SYSTEM_WEEKS);
+  const absentAll = absentByType['نظري'] + absentByType['عملي'];
+  const limitAll = ceilLimit(totalLecturesAll); // للمعلومة فقط، لكن الحرمان فعلياً بالشُعب عند وجود شقين
+
+  return {
+    weeklyMeetings,
+    percentShown,
+    statusClass, statusColor, msg, advice,
+
+    // تفصيل
+    hasTheory, hasPrac,
+    weeklyByType, totalByType, limitByType, absentByType,
+
+    // إجمالي عام (اختياري للعرض)
+    totalLecturesAll, absentAll, limitAll
+  };
+}
 
   function updateCourseUI(courseId){
     const course = courses.find(c => c.id === courseId);
@@ -772,35 +849,37 @@
 
     const s = computeCourseState(course);
 
-    const box = document.getElementById(`resultBox-${courseId}`);
-    const msgEl = document.getElementById(`statusMsg-${courseId}`);
-    const pctEl = document.getElementById(`percentTxt-${courseId}`);
-    const barEl = document.getElementById(`barFill-${courseId}`);
-    const absEl = document.getElementById(`absentTxt-${courseId}`);
-    const limEl = document.getElementById(`limitTxt-${courseId}`);
-    const advEl = document.getElementById(`adviceBox-${courseId}`);
+const box = document.getElementById(`resultBox-${courseId}`);
+const msgEl = document.getElementById(`statusMsg-${courseId}`);
+const pctEl = document.getElementById(`percentTxt-${courseId}`);
+const barEl = document.getElementById(`barFill-${courseId}`);
+const absEl = document.getElementById(`absentTxt-${courseId}`);
+const limEl = document.getElementById(`limitTxt-${courseId}`);
+const advEl = document.getElementById(`adviceBox-${courseId}`);
 
-    if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
+if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
 
-    box.classList.remove('safe-bg','warning-bg','danger-bg');
-    box.classList.add(s.statusClass);
+box.classList.remove('safe-bg','warning-bg','danger-bg');
+box.classList.add(s.statusClass);
 
-    msgEl.textContent = s.msg;
-    msgEl.style.color = s.statusColor;
+msgEl.textContent = s.msg;
+msgEl.style.color = s.statusColor;
 
-    pctEl.textContent = `${Number(s.percent).toFixed(1).replace(/\.0+$/,'')}%`;
+pctEl.textContent = `${s.percentShown.toFixed(1).replace(/\.0+$/,'')}%`;
 
-    const w = Math.min((s.percent / 20) * 100, 100);
-    barEl.style.width = `${w}%`;
-    barEl.style.background = s.statusColor;
+const w = Math.min((s.percentShown / 20) * 100, 100);
+barEl.style.width = `${w}%`;
+barEl.style.background = s.statusColor;
 
-    absEl.textContent = `غيابك الحالي: ${Number(s.currentAbsent).toFixed(1).replace(/\.0+$/,'')} ${hourWord(s.currentAbsent)}`;
+absEl.textContent = `غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}`;
 
-    const icon = limEl.querySelector('.info-icon')?.outerHTML || '';
-    limEl.innerHTML = `حد الحرمان: ${Number(s.limit).toFixed(1).replace(/\.0+$/,'')} ${hourWord(s.limit)} ${icon}`;
+const icon = limEl.querySelector('.info-icon')?.outerHTML || '';
+limEl.innerHTML = `حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)} ${icon}`;
 
-    advEl.innerHTML = s.advice;
-    localStorage.setItem('myCourses', JSON.stringify(courses));
+advEl.innerHTML = s.advice;
+
+localStorage.setItem('myCourses', JSON.stringify(courses));
+
   }
 
   // ============================
@@ -966,37 +1045,45 @@
       const wrap = card.querySelector(`#meetWrap-${course.id}`);
       if (wrap) {
         wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
-          <div class="flex-inputs" style="margin-top:8px;">
-            <div>
-              <div class="input-sub-label">اليوم</div>
-              <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-                ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
-                  `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
-                ).join('')}
-              </select>
-            </div>
+  <div class="flex-inputs" style="margin-top:8px;">
+    <div>
+      <div class="input-sub-label">اليوم</div>
+      <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+        ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
+          `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
+        ).join('')}
+      </select>
+    </div>
 
-            <div>
-              <div class="input-sub-label">المدة</div>
-              <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-                <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
-                <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
-              </select>
-            </div>
+    <div>
+      <div class="input-sub-label">النوع</div>
+      <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
+        <option value="نظري" ${(m.type === 'نظري') ? 'selected' : ''}>نظري</option>
+        <option value="عملي" ${(m.type === 'عملي') ? 'selected' : ''}>عملي</option>
+      </select>
+    </div>
 
-            <div>
-              <div class="input-sub-label">عدد مرات الغياب</div>
-              <input type="text" inputmode="numeric" pattern="[0-9]*"
-                value="${m.absent ?? ''}" placeholder="0"
-                oninput="
-                  this.value = fixNumbers(this.value);
-                  updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
-                  updateCourseUI(${course.id});
-                "
-                onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
-            </div>
-          </div>
-        `).join('');
+    <div>
+      <div class="input-sub-label">المدة (لا تؤثر)</div>
+      <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+        <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
+        <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="input-sub-label">عدد مرات الغياب</div>
+      <input type="text" inputmode="numeric" pattern="[0-9]*"
+        value="${m.absent ?? ''}" placeholder="0"
+        oninput="
+          this.value = fixNumbers(this.value);
+          updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+          updateCourseUI(${course.id});
+        "
+        onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+    </div>
+  </div>
+`).join('');
       }
     });
 
