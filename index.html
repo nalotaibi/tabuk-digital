@@ -374,6 +374,28 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
     .info-ok:active{ transform: translateY(1px); }
+
+/* === إصلاح وضوح الخط في حقول الإدخال === */
+input, select, button, textarea {
+  font-family: "Cairo", system-ui, -apple-system, "Segoe UI", Arial, sans-serif !important;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+select, input {
+  -webkit-appearance: none;
+  appearance: none;
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* تحسين عرض الخط في iOS */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+    
   </style>
 </head>
 
