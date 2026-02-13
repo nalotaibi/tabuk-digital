@@ -583,6 +583,34 @@ document.addEventListener('click', (e)=>{
   if (!e.target.closest('.cs')) closeAllCS();
 });
 
+/* ===== Fix: text clipping inside custom select button ===== */
+.cs-btn{
+  height: 44px !important;          /* ارفعناها شوي عشان ما ينقص النص */
+  padding: 0 12px 0 36px !important; /* بدون padding عمودي */
+  line-height: 1 !important;
+
+  display: flex !important;
+  align-items: center !important;    /* ✅ يمنع قص النص عمودياً */
+  justify-content: center !important;
+
+  white-space: nowrap !important;    /* ✅ لا يكسر السطر */
+  overflow: hidden !important;       /* ✅ ما يطلع خارج المربع */
+  text-overflow: ellipsis !important;/* ✅ إذا طول النص يطلع ... */
+}
+
+/* ✅ إزالة أي رموز/×× جاية من pseudo-elements بالغلط */
+.cs-btn::before,
+.cs-btn::after{
+  content: none !important;
+}
+
+/* ✅ خلي النص داخل المربعات غير عريض (كما طلبتي) */
+.cs-btn{
+  font-weight: 600 !important;       /* بدل 800 */
+  font-size: 15px !important;        /* ثابت */
+}
+
+  
   </style>
 </head>
 
