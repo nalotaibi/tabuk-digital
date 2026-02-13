@@ -374,45 +374,64 @@
     }
     .info-ok:active{ transform: translateY(1px); }
 
-  /* 👇 الصقي الكود الجديد هنا آخر شيء */
-  html, body { -webkit-text-size-adjust: 100%; }
-  button, input, select, textarea{
-    font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
-  }
-  .flex-inputs select{
-    direction: rtl !important;
-    unicode-bidi: plaintext;
-    background-color: #eeeeee;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 22px;
-    text-align: center;
-    text-align-last: center;
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1.2;
-    height: 56px;
-    padding: 10px 16px 10px 52px;
-    box-sizing: border-box;
-    color: var(--primary);
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: 18px 50%;
-  }
-  .flex-inputs select option{
-    direction: rtl;
-    unicode-bidi: plaintext;
-    color: #111827;
-  }
-  .flex-inputs input{
-    height: 56px;
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1.2;
-  }
+  /* ===== Fix select RTL rendering + keep same size/look ===== */
+html, body { -webkit-text-size-adjust: 100%; }
 
-    
+button, input, select, textarea{
+  font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
+}
+
+/* نفس مقاس تصميمك تقريبًا + يحل مشكلة تكسير العربية */
+.flex-inputs select{
+  direction: rtl !important;
+  unicode-bidi: plaintext;
+
+  /* مقاس قريب من قبل (مو كبير) */
+  height: 44px;                 /* بدل 56 */
+  font-size: 16px;              /* واضح بدون تضخيم */
+  font-weight: 800;
+  line-height: 1.2;
+
+  /* نفس الشكل */
+  border-radius: 14px;          /* مثل تصميمك الأساسي */
+  border: 1.5px solid #edf2f1;
+  background-color: #eee;
+
+  /* المحاذاة */
+  text-align: center;
+  text-align-last: center;
+
+  /* مساحة بسيطة لأيقونة السهم */
+  padding: 10px 12px 10px 40px;
+  box-sizing: border-box;
+
+  /* لون النص مثل الصورة (أزرق) */
+  color: var(--primary);
+
+  /* توحيد الشكل بين ويندوز/آيفون */
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* سهمين أصغر (بدون تضخيم) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px 50%;
+}
+
+/* RTL داخل القائمة نفسها */
+.flex-inputs select option{
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* (اختياري) خليه نفس ارتفاع select */
+.flex-inputs input{
+  height: 44px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
   </style>
 </head>
 
