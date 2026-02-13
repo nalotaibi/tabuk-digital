@@ -436,6 +436,31 @@ select{ background: #fff !important; }
     padding-bottom: 14px;
   }
 }
+/* ===== توحيد ارتفاع الحقول داخل صف اللقاءات + منع قص النص ===== */
+.flex-inputs select,
+.flex-inputs input{
+  box-sizing: border-box;
+  height: 48px !important;        /* توحيد الارتفاع */
+  padding: 10px 14px !important;
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+  border-radius: 18px !important;
+  text-align: center;
+  text-align-last: center;
+}
+
+/* ✅ علاج قص النص من اليسار بسبب سهم الـ select (السهم يظهر يسار) */
+.flex-inputs select{
+  padding-left: 38px !important;  /* مساحة للسهم */
+  padding-right: 14px !important;
+  direction: rtl;
+}
+
+/* ✅ خانة عدد مرات الغياب (input) تبقى متساوية الارتفاع بدون قص */
+.flex-inputs input{
+  direction: ltr;                 /* أرقام */
+  unicode-bidi: plaintext;
+}
 
     
   </style>
