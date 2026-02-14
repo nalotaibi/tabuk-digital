@@ -351,30 +351,35 @@
     }
     .info-ok:active{ transform: translateY(1px); }
 
-    /* الكود المطور لضمان ظهور النص في كل الأجهزة */
+  
+    /* تعديل الألوان لتطابق الصورة: خلفية رمادية ونص أزرق */
     select, input {
       width: 100%;
       height: 42px; 
       padding: 5px;
       border-radius: 12px;
-      border: 1.5px solid #edf2f1;
+      border: 1.5px solid #edf2f1; /* حدود خفيفة */
       font-family: inherit;
       text-align: center;
       font-size: 0.95rem;
+      font-weight: bold; /* نص سميك مثل الصورة */
       outline: none;
       box-sizing: border-box;
       transition: all 0.3s;
-      background-color: white;
-      color: #2c3e50;
-      line-height: 1.2; /* يضمن ظهور الأحرف العربية كاملة */
+      
+      /* التعديلات الجديدة */
+      background-color: #f0f0f0; /* خلفية رمادية فاتحة */
+      color: #007bff; /* نص أزرق مطابق للصورة */
+      
+      line-height: 1.2; 
       display: block;
     }
 
-    /* إصلاح خاص للآيفون والويندوز لمنع تداخل العناصر */
+    /* الحفاظ على شكل السهم مع الخلفية الجديدة */
     select {
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23006699' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23007bff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: left 10px center;
     }
